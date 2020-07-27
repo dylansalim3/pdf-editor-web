@@ -1,0 +1,31 @@
+<div>
+  <div id="title" class="text-center">
+    <h1><b>PDF Rotate</b></h1>
+    <p>Free PDF Rotate Tool</p>
+  </div>
+
+  <nz-upload nzType="drag" [nzMultiple] [(nzFileList)]="fileList" nzAccept="application/pdf"
+             [nzBeforeUpload]="beforeUpload">
+    <p class="ant-upload-drag-icon">
+      <i nz-icon nzType="inbox"></i>
+    </p>
+    <p class="ant-upload-text">Click or drag file to this area to upload</p>
+    <p class="ant-upload-hint">
+      Upload one or more PDF file and rotate pdf here
+    </p>
+  </nz-upload>
+  <div class="flex justify-content-center" style="padding-top: 10px">
+    <nz-space>
+      <nz-space-item>
+        <button nz-button nzType="primary" (click)="onSubmitClick()">Submit</button>
+      </nz-space-item>
+      <nz-space-item>
+        <button nz-button nzType="danger" (click)="onCancelClick()">Cancel</button>
+      </nz-space-item>
+    </nz-space>
+  </div>
+
+
+
+</div>
+

@@ -1,0 +1,92 @@
+<div nz-row>
+  <div
+    class="edit-col"
+    nz-col
+    nz-resizable
+    [nzMinColumn]="3"
+    [nzMaxColumn]="20"
+    [nzGridColumnCount]="24"
+    [nzSpan]="col"
+    (nzResize)="onResize($event)"
+  >
+    <nz-resize-handles [nzDirections]="['right']"></nz-resize-handles>
+
+    <div class="flex row justify-content-between" style="padding:20px;height: 100vh">
+      <div>
+        <span>Rotate</span>
+        <hr>
+        <div>
+          <button nz-button nzType="dashed"><i nz-icon nzType="rotate-left" nzTheme="outline"></i></button>
+          <button nz-button nzType="dashed"><i nz-icon nzType="rotate-right" nzTheme="outline"></i></button>
+        </div>
+        <div style="margin-top: 10px">
+          <span>Move pages</span>
+          <hr>
+          <span>Page <nz-input-number [(ngModel)]="startPage" [nzMin]="1" [nzMax]="maxPage"></nz-input-number> to Page <nz-input-number
+            [(ngModel)]="endPage" [nzMin]="1" [nzMax]="maxPage"></nz-input-number></span>
+          <button style="margin-left: 5px" nz-button nzType="primary">Move</button>
+        </div>
+
+        <div style="margin-top: 10px">
+          <span>Add Watermark</span>
+          <hr>
+          <nz-input-group [nzSuffix]="inputClearTpl">
+            <input type="text" nz-input [(ngModel)]="watermarkText" placeholder="Watermark Text here"/>
+          </nz-input-group>
+          <ng-template #inputClearTpl
+          ><i nz-icon class="ant-input-clear-icon" nzTheme="fill" nzType="close-circle" *ngIf="watermarkText"
+              (click)="watermarkText = null"></i
+          ></ng-template>
+          <br>
+          <div style="margin-top: 10px">
+            <span>Color: </span>
+            <input type="color" [(ngModel)]="colorCode">
+            <span style="padding-left: 5px">Style: </span>
+            <nz-select ngModel="0">
+              <nz-option nzValue="0" nzLabel="No Style"></nz-option>
+              <nz-option nzValue="1" nzLabel="Style 1"></nz-option>
+              <nz-option nzValue="2" nzLabel="Style 2"></nz-option>
+              <nz-option nzValue="3" nzLabel="Style 3"></nz-option>
+            </nz-select>
+            <button style="margin-left: 5px" nz-button nzType="primary">Add Watermark</button>
+          </div>
+      </div>
+
+
+        <span class="flex justify-content-center">
+          <button nz-button nzType="primary" nzSize="large">Convert Now</button>
+        </span>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div nz-col [nzSpan]="24 - col">
+    <div *ngIf="src">
+      <ngx-extended-pdf-viewer [src]="src" height="80vh" [useBrowserLocale]="true" [showBookmarkButton]="false"
+                               [showDownloadButton]="false" [showPrintButton]="false" [showPropertiesButton]="false"
+                               [showOpenFileButton]="false" [showHandToolButton]="false"
+                               [showRotateButton]="false"
+                               (pagesLoaded)="onPageLoaded($event)"></ngx-extended-pdf-viewer>
+    </div>
+  </div>
+
+</div>
+
+<!--<div nz-row>-->
+<!--  <div-->
+<!--    class="col"-->
+<!--    nz-col-->
+<!--    nz-resizable-->
+<!--    (nzResize)="onResize($event)"-->
+<!--    [nzMinColumn]="3"-->
+<!--    [nzMaxColumn]="20"-->
+<!--    [nzGridColumnCount]="24"-->
+<!--    [nzSpan]="col"-->
+<!--  >-->
+<!--    <nz-resize-handles [nzDirections]="['right']"></nz-resize-handles>-->
+<!--    col-{{ col }}-->
+<!--  </div>-->
+<!--  <div class="col right" nz-col [nzSpan]="24 - col">col-{{ 24 - col }}</div>-->
+<!--</div>-->

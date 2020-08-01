@@ -1,5 +1,3 @@
-/*@import "./node_modules/ng-zorro-antd/resizable/style/entry.less";*/
-
 .edit-col{
   background: whitesmoke;
 }
@@ -117,4 +115,18 @@
 }
 .nz-resizable-disabled .nz-resizable-handle {
   pointer-events: none;
+}
+
+.responsive{
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit,minmax(400px,1fr));
+}
+
+.item-1{
+  grid-column: span 1;
+}
+
+.item-2{
+  grid-column: span 3;
 }

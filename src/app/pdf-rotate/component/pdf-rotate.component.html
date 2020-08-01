@@ -1,23 +1,22 @@
 <div>
   <div id="title" class="text-center">
-    <h1><b>PDF Rotate</b></h1>
-    <p>Free PDF Rotate Tool</p>
+    <h1 nz-typography><b>PDF Editor</b></h1>
+    <p class="text-lg">Your one stop PDF Editing Tools. Supports Rotate Pages, Moving pages, Delete Pages within PDF and Adding Watermark to PDF </p>
   </div>
 
-  <nz-upload nzType="drag" [nzMultiple] [(nzFileList)]="fileList" nzAccept="application/pdf"
-             [nzBeforeUpload]="beforeUpload">
+  <nz-upload nzType="drag" [(nzFileList)]="fileList" nzAccept="application/pdf" [nzBeforeUpload]="onUploadFile">
     <p class="ant-upload-drag-icon">
       <i nz-icon nzType="inbox"></i>
     </p>
     <p class="ant-upload-text">Click or drag file to this area to upload</p>
     <p class="ant-upload-hint">
-      Upload one or more PDF file and rotate pdf here
+      Upload PDF file here
     </p>
   </nz-upload>
-  <div class="flex justify-content-center" style="padding-top: 10px">
+  <div class="flex justify-content-center pt-2">
     <nz-space>
       <nz-space-item>
-        <button nz-button nzType="primary" (click)="onSubmitClick()">Submit</button>
+        <button nz-button nzType="primary" (click)="onSubmitClick()" [disabled]="fileList.length<=0">Submit</button>
       </nz-space-item>
       <nz-space-item>
         <button nz-button nzType="danger" (click)="onCancelClick()">Cancel</button>

@@ -8,6 +8,6 @@
 - [ngx-extended-pdf-viewer](https://www.npmjs.com/package/ngx-extended-pdf-viewer) - PDF Viewer
 
 ## Demo
-![Demo Picture](https://github.com/dylansalim3/pdf-editor-web/tree/master/demo/demo.jpg?raw=true)
+<img src="https://github.com/dylansalim3/pdf-editor-web/tree/master/demo/demo.jpg?raw=true" alt="Demo Picture"/>
 
 This PDF Editor can be accessed [here](https://dylansalim3.github.io/pdf-editor-web/)

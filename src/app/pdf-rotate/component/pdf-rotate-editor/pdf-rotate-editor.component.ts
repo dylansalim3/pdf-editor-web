@@ -124,11 +124,17 @@ export class PdfRotateEditorComponent implements OnInit, OnDestroy {
     }
 
     onRemovePage(startPage: number, endPage: number) {
+        let pagesToKeep = [];
         if (endPage == startPage || endPage == null) {
-            this.pdfDocs.removePage(startPage - 1);
+            pagesToKeep.push(startPage - 1);
         } else {
-            for (let i = startPage; i < endPage - startPage + 1; i++) {
-                this.pdfDocs.removePage(i - 1);
+            for (let i = startPage; i < endPage; i++) {
+                pagesToKeep.push(startPage - 1);
+            }
+        }
+        for(let i = 0; i < this.maxPage; i++){
+            if(!pagesToKeep.includes(i)){
+                this.pdfDocs.removePage(i);
             }
         }
         this.refreshPDF();

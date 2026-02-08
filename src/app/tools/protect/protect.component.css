@@ -1,0 +1,13 @@
+/* Protect Component Styles */
+:host {
+  display: block;
+}
+
+.upload-zone {
+  transition: all 0.3s ease;
+}
+
+.upload-zone:hover {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+}

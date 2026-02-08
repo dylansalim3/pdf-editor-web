@@ -1,0 +1,137 @@
+<div class="max-w-4xl mx-auto">
+  <div class="page-header">
+    <div class="flex items-center space-x-2 mb-2">
+      <a routerLink="/" class="text-secondary-500 hover:text-secondary-700 text-sm">Home</a>
+      <span class="text-secondary-400">/</span>
+      <a routerLink="/tools" class="text-secondary-500 hover:text-secondary-700 text-sm">Tools</a>
+      <span class="text-secondary-400">/</span>
+      <span class="text-secondary-900 font-medium text-sm">Split PDF</span>
+    </div>
+    <h1 class="page-title">Split PDF</h1>
+    <p class="page-subtitle">Divide your PDF into multiple files</p>
+  </div>
+
+  <div class="space-y-6">
+    <!-- Upload -->
+    <div class="card" *ngIf="!splitComplete">
+      <div class="card-header">
+        <h3 class="font-semibold text-secondary-900">1. Upload PDF</h3>
+      </div>
+      <div class="card-body">
+        <nz-upload nzType="drag" [nzBeforeUpload]="beforeUpload" [(nzFileList)]="fileList" class="upload-zone">
+          <p class="ant-upload-drag-icon">
+            <i nz-icon nzType="file-pdf" nzTheme="outline" class="text-5xl text-red-500"></i>
+          </p>
+          <p class="ant-upload-text">Drop PDF here or click to upload</p>
+        </nz-upload>
+
+        <div *ngIf="fileList.length > 0" class="mt-4 p-4 bg-red-50 rounded-lg">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <i nz-icon nzType="file-pdf" class="text-2xl text-red-600"></i>
+              <div>
+                <p class="font-medium">{{ fileList[0].name }}</p>
+                <p class="text-sm text-secondary-500">{{ formatFileSize(fileList[0].size || 0) }} • {{ totalPages }} pages</p>
+              </div>
+            </div>
+            <button (click)="fileList = []" class="btn-icon text-secondary-400 hover:text-danger-600">
+              <i nz-icon nzType="close"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Options -->
+    <div class="card" *ngIf="fileList.length > 0 && !splitComplete">
+      <div class="card-header">
+        <h3 class="font-semibold text-secondary-900">2. Split Options</h3>
+      </div>
+      <div class="card-body space-y-4">
+        <nz-radio-group [(ngModel)]="options.mode" class="flex flex-col space-y-3">
+          <label nz-radio nzValue="range" class="p-3 border rounded-lg hover:bg-secondary-50">
+            <div>
+              <span class="font-medium">Page Range</span>
+              <p class="text-sm text-secondary-500">Extract a specific range of pages</p>
+              <div *ngIf="options.mode === 'range'" class="mt-3 flex items-center space-x-3">
+                <nz-input-number [(ngModel)]="options.startPage" [nzMin]="1" [nzMax]="totalPages"></nz-input-number>
+                <span>to</span>
+                <nz-input-number [(ngModel)]="options.endPage" [nzMin]="1" [nzMax]="totalPages"></nz-input-number>
+              </div>
+            </div>
+          </label>
+
+          <label nz-radio nzValue="every" class="p-3 border rounded-lg hover:bg-secondary-50">
+            <div>
+              <span class="font-medium">Split Every N Pages</span>
+              <p class="text-sm text-secondary-500">Divide into equal parts</p>
+              <div *ngIf="options.mode === 'every'" class="mt-3">
+                <label class="text-sm text-secondary-600">Split every</label>
+                <nz-input-number [(ngModel)]="options.everyNPages" [nzMin]="1" [nzMax]="totalPages" class="mx-2"></nz-input-number>
+                <span class="text-sm text-secondary-600">pages</span>
+                <p class="text-sm text-secondary-500 mt-1">Will create {{ Math.ceil(totalPages / options.everyNPages) }} files</p>
+              </div>
+            </div>
+          </label>
+
+          <label nz-radio nzValue="extract" class="p-3 border rounded-lg hover:bg-secondary-50">
+            <div>
+              <span class="font-medium">Extract Specific Pages</span>
+              <p class="text-sm text-secondary-500">Select individual pages (e.g., 1,3,5-7)</p>
+              <input *ngIf="options.mode === 'extract'" type="text" [(ngModel)]="options.extractPages" placeholder="1,3,5-7" class="form-input mt-3">
+            </div>
+          </label>
+        </nz-radio-group>
+      </div>
+    </div>
+
+    <!-- Split Button -->
+    <div class="card" *ngIf="fileList.length > 0 && !splitComplete">
+      <div class="card-body">
+        <button (click)="onSplit()" [disabled]="splitting" class="btn-primary w-full py-3">
+          <i nz-icon nzType="scissor" nzTheme="outline" class="mr-2"></i>
+          {{ splitting ? 'Splitting...' : 'Split PDF' }}
+        </button>
+        <nz-progress *ngIf="splitting" [nzPercent]="splitProgress" nzStatus="active" class="mt-4"></nz-progress>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="card" *ngIf="splitComplete">
+      <div class="card-header flex items-center justify-between">
+        <h3 class="font-semibold text-secondary-900 flex items-center">
+          <i nz-icon nzType="check-circle" nzTheme="outline" class="mr-2 text-success-600"></i>
+          PDF Split Successfully
+        </h3>
+        <span class="badge badge-success">{{ generatedFiles.length }} files</span>
+      </div>
+      <div class="card-body">
+        <div class="space-y-3 mb-6">
+          <div *ngFor="let file of generatedFiles" class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg">
+            <div class="flex items-center space-x-3">
+              <i nz-icon nzType="file-pdf" nzTheme="outline" class="text-xl text-red-500"></i>
+              <div>
+                <p class="font-medium text-sm">{{ file.name }}</p>
+                <p class="text-xs text-secondary-500">Pages: {{ file.pages }} • {{ formatFileSize(file.size) }}</p>
+              </div>
+            </div>
+            <button (click)="onDownload(file)" class="btn-icon text-primary-600 hover:text-primary-700">
+              <i nz-icon nzType="download"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button (click)="onDownloadAll()" class="btn-primary flex-1">
+            <i nz-icon nzType="download" nzTheme="outline" class="mr-2"></i>
+            Download All (ZIP)
+          </button>
+          <button (click)="onReset()" class="btn-secondary flex-1">
+            <i nz-icon nzType="reload" nzTheme="outline" class="mr-2"></i>
+            Split Another
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

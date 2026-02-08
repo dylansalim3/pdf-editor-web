@@ -12,7 +12,9 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {en_US, NZ_I18N} from 'ng-zorro-antd/i18n';
 import {registerLocaleData} from '@angular/common';
 import en from '@angular/common/locales/en';
-import {NgxsStoragePlugin, NgxsStoragePluginModule} from '@ngxs/storage-plugin';
+import {NgxsStoragePluginModule} from '@ngxs/storage-plugin';
+import {NgxsModule} from '@ngxs/store';
+import {LayoutModule} from './layout/layout.module';
 
 registerLocaleData(en);
 
@@ -29,9 +31,11 @@ registerLocaleData(en);
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    NgxsModule.forRoot([]),
     NgxsStoragePluginModule.forRoot({
       key:['PDF_ROTATE'],
-    })
+    }),
+    LayoutModule
   ],
   providers: [{provide: NZ_I18N, useValue: en_US}],
   exports: [

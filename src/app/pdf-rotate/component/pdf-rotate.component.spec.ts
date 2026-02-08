@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { RouterTestingModule } from '@angular/router/testing';
 import { PdfRotateComponent } from './pdf-rotate.component';
+import { NgxsModule } from '@ngxs/store';
+import { PdfRotateState } from '../state/pdf-rotate.state';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('PdfRotateComponent', () => {
   let component: PdfRotateComponent;
@@ -8,7 +11,12 @@ describe('PdfRotateComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PdfRotateComponent ]
+      imports: [
+        RouterTestingModule,
+        NgxsModule.forRoot([PdfRotateState])
+      ],
+      declarations: [ PdfRotateComponent ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();
   }));

@@ -1,0 +1,36 @@
+/* Dashboard Component Styles */
+:host {
+  display: block;
+}
+
+/* Quick action card hover effect */
+.card {
+  transition: all 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+/* Tool category cards */
+.tool-category-card {
+  height: 100%;
+}
+
+/* Icon container animation */
+.icon-container {
+  transition: transform 0.2s ease-in-out;
+}
+
+.group:hover .icon-container {
+  transform: scale(1.1);
+}
+
+/* Recent file row */
+.recent-file-row {
+  transition: background-color 0.15s ease-in-out;
+}
+
+.recent-file-row:hover {
+  background-color: #f8fafc;
+}

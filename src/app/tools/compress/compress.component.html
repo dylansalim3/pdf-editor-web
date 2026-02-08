@@ -1,0 +1,122 @@
+<div class="max-w-4xl mx-auto">
+  <div class="page-header">
+    <div class="flex items-center space-x-2 mb-2">
+      <a routerLink="/" class="text-secondary-500 hover:text-secondary-700 text-sm">Home</a>
+      <span class="text-secondary-400">/</span>
+      <a routerLink="/tools" class="text-secondary-500 hover:text-secondary-700 text-sm">Tools</a>
+      <span class="text-secondary-400">/</span>
+      <span class="text-secondary-900 font-medium text-sm">Compress PDF</span>
+    </div>
+    <h1 class="page-title">Compress PDF</h1>
+    <p class="page-subtitle">Reduce file size while maintaining quality</p>
+  </div>
+
+  <div class="space-y-6">
+    <!-- Upload -->
+    <div class="card" *ngIf="!compressed">
+      <div class="card-header">
+        <h3 class="font-semibold text-secondary-900">Upload PDF</h3>
+      </div>
+      <div class="card-body">
+        <nz-upload nzType="drag" [nzBeforeUpload]="beforeUpload" [(nzFileList)]="fileList" class="upload-zone">
+          <p class="ant-upload-drag-icon">
+            <i nz-icon nzType="file-pdf" nzTheme="outline" class="text-5xl text-red-500"></i>
+          </p>
+          <p class="ant-upload-text">Drop PDF here to compress</p>
+        </nz-upload>
+
+        <div *ngIf="fileList.length > 0" class="mt-4 p-4 bg-red-50 rounded-lg">
+          <div class="flex items-center space-x-3">
+            <i nz-icon nzType="file-pdf" class="text-2xl text-red-600"></i>
+            <div>
+              <p class="font-medium">{{ fileList[0].name }}</p>
+              <p class="text-sm text-secondary-500">{{ formatFileSize(originalSize) }} • {{ originalPages }} pages</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Options -->
+    <div class="card" *ngIf="fileList.length > 0 && !compressed">
+      <div class="card-header">
+        <h3 class="font-semibold text-secondary-900">Compression Settings</h3>
+      </div>
+      <div class="card-body space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div *ngFor="let opt of qualityOptions" 
+               (click)="options.quality = opt.value"
+               class="p-4 border-2 rounded-lg cursor-pointer transition-all"
+               [class.border-primary-500]="options.quality === opt.value"
+               [class.bg-primary-50]="options.quality === opt.value"
+               [class.border-secondary-200]="options.quality !== opt.value">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-semibold">{{ opt.label }}</span>
+              <span class="badge" [class.bg-success-100]="opt.value === 'high'" [class.bg-warning-100]="opt.value === 'medium'" [class.bg-secondary-100]="opt.value === 'low'">{{ opt.reduction }}</span>
+            </div>
+            <p class="text-sm text-secondary-500">{{ opt.description }}</p>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-secondary-200 space-y-2">
+          <label nz-checkbox [(ngModel)]="options.optimizeImages">
+            <span class="text-secondary-700">Optimize images</span>
+          </label>
+          <label nz-checkbox [(ngModel)]="options.removeMetadata">
+            <span class="text-secondary-700">Remove metadata</span>
+          </label>
+          <label nz-checkbox [(ngModel)]="options.compressFonts">
+            <span class="text-secondary-700">Compress fonts</span>
+          </label>
+        </div>
+
+        <button (click)="onCompress()" [disabled]="compressing" class="btn-primary w-full py-3">
+          <i nz-icon nzType="compress" nzTheme="outline" class="mr-2"></i>
+          {{ compressing ? 'Compressing...' : 'Compress PDF' }}
+        </button>
+        <nz-progress *ngIf="compressing" [nzPercent]="compressProgress" nzStatus="active" class="mt-4"></nz-progress>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="card" *ngIf="compressed">
+      <div class="card-header">
+        <h3 class="font-semibold text-secondary-900 flex items-center">
+          <i nz-icon nzType="check-circle" nzTheme="outline" class="mr-2 text-success-600"></i>
+          Compression Complete
+        </h3>
+      </div>
+      <div class="card-body">
+        <div class="grid grid-cols-2 gap-6 mb-6">
+          <div class="p-4 bg-secondary-50 rounded-lg text-center">
+            <p class="text-sm text-secondary-500 mb-1">Original Size</p>
+            <p class="text-2xl font-bold text-secondary-900">{{ formatFileSize(originalSize) }}</p>
+          </div>
+          <div class="p-4 bg-success-50 rounded-lg text-center">
+            <p class="text-sm text-secondary-500 mb-1">Compressed Size</p>
+            <p class="text-2xl font-bold text-success-600">{{ formatFileSize(compressedSize) }}</p>
+          </div>
+        </div>
+
+        <div class="p-4 bg-primary-50 rounded-lg mb-6">
+          <div class="flex items-center justify-between">
+            <span class="font-medium text-primary-900">Space Saved</span>
+            <span class="text-2xl font-bold text-primary-600">{{ getCompressionRatio() }}%</span>
+          </div>
+          <nz-progress [nzPercent]="getCompressionRatio()" nzStrokeColor="#10b981" class="mt-2"></nz-progress>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button (click)="onDownload()" class="btn-primary flex-1">
+            <i nz-icon nzType="download" nzTheme="outline" class="mr-2"></i>
+            Download Compressed PDF
+          </button>
+          <button (click)="onReset()" class="btn-secondary flex-1">
+            <i nz-icon nzType="reload" nzTheme="outline" class="mr-2"></i>
+            Compress Another
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

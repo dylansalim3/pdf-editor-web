@@ -1,0 +1,6 @@
+name = "pdf-editor-web"
+compatibility_date = "2024-01-01"
+
+[build]
+command = "export NODE_OPTIONS=--openssl-legacy-provider && npm run build -- --configuration production"
+destination_dir = "dist"

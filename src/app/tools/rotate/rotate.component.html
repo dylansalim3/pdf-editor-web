@@ -1,0 +1,201 @@
+<div class="h-full flex flex-col">
+  <!-- Page Header -->
+  <div class="bg-white border-b border-secondary-200 px-6 py-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="flex items-center space-x-2 mb-1">
+          <a routerLink="/" class="text-secondary-500 hover:text-secondary-700 text-sm">Home</a>
+          <span class="text-secondary-400">/</span>
+          <a routerLink="/tools" class="text-secondary-500 hover:text-secondary-700 text-sm">Tools</a>
+          <span class="text-secondary-400">/</span>
+          <span class="text-secondary-900 font-medium text-sm">Rotate Pages</span>
+        </div>
+        <h1 class="text-2xl font-bold text-secondary-900">Rotate PDF Pages</h1>
+        <p class="text-sm text-secondary-500 mt-1">Rotate pages left, right, or 180 degrees</p>
+      </div>
+      <div class="flex items-center space-x-3">
+        <button (click)="onUndo()" class="btn-secondary" title="Undo">
+          <i nz-icon nzType="undo" nzTheme="outline" class="mr-2"></i>
+          Undo
+        </button>
+        <button (click)="onRedo()" class="btn-secondary" title="Redo">
+          <i nz-icon nzType="redo" nzTheme="outline" class="mr-2"></i>
+          Redo
+        </button>
+        <button (click)="onDownload()" class="btn-primary">
+          <i nz-icon nzType="download" nzTheme="outline" class="mr-2"></i>
+          Download
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex overflow-hidden">
+    <!-- PDF Viewer -->
+    <div class="flex-1 bg-secondary-800 relative">
+      <div *ngIf="loading" class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
+        <nz-spin nzSize="large" nzTip="Processing..."></nz-spin>
+      </div>
+      
+      <ngx-extended-pdf-viewer
+        [src]="src"
+        height="100%"
+        [useBrowserLocale]="true"
+        [showBookmarkButton]="false"
+        [showDownloadButton]="false"
+        [showPrintButton]="false"
+        [showPropertiesButton]="false"
+        [showOpenFileButton]="false"
+        [showHandToolButton]="true"
+        [showRotateButton]="false"
+        [textLayer]="true"
+        (pagesLoaded)="onPageLoaded($event)"
+        (pageChange)="onCurrentPageChanged($event)">
+      </ngx-extended-pdf-viewer>
+    </div>
+
+    <!-- Sidebar Controls -->
+    <div class="w-80 bg-white border-l border-secondary-200 flex flex-col overflow-y-auto">
+      <!-- Quick Rotation -->
+      <div class="p-4 border-b border-secondary-200">
+        <h3 class="font-semibold text-secondary-900 mb-3">Quick Rotate</h3>
+        <div class="grid grid-cols-3 gap-2">
+          <button (click)="onRotateLeft()" class="btn-secondary flex flex-col items-center py-3">
+            <i nz-icon nzType="rotate-left" nzTheme="outline" class="text-xl mb-1"></i>
+            <span class="text-xs">Left 90°</span>
+          </button>
+          <button (click)="onRotate180()" class="btn-secondary flex flex-col items-center py-3">
+            <i nz-icon nzType="sync" nzTheme="outline" class="text-xl mb-1"></i>
+            <span class="text-xs">180°</span>
+          </button>
+          <button (click)="onRotateRight()" class="btn-secondary flex flex-col items-center py-3">
+            <i nz-icon nzType="rotate-right" nzTheme="outline" class="text-xl mb-1"></i>
+            <span class="text-xs">Right 90°</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Rotation Settings -->
+      <div class="p-4 border-b border-secondary-200">
+        <h3 class="font-semibold text-secondary-900 mb-3">Rotation Settings</h3>
+        
+        <!-- Mode Selection -->
+        <div class="mb-4">
+          <label class="form-label">Apply To</label>
+          <nz-radio-group [(ngModel)]="rotationMode" class="flex flex-col space-y-2">
+            <label nz-radio nzValue="current">
+              <span class="text-secondary-700">Current page (Page {{ currentPage }})</span>
+            </label>
+            <label nz-radio nzValue="custom">
+              <span class="text-secondary-700">Specific page</span>
+            </label>
+            <label nz-radio nzValue="all">
+              <span class="text-secondary-700">All pages ({{ maxPage }} total)</span>
+            </label>
+          </nz-radio-group>
+        </div>
+
+        <!-- Custom Page -->
+        <div *ngIf="rotationMode === 'custom'" class="mb-4">
+          <label class="form-label">Page Number</label>
+          <nz-input-number 
+            [(ngModel)]="customPage" 
+            [nzMin]="1" 
+            [nzMax]="maxPage"
+            class="w-full">
+          </nz-input-number>
+        </div>
+
+        <!-- Rotation Angle -->
+        <div class="mb-4">
+          <label class="form-label">Rotation Angle</label>
+          <nz-select [(ngModel)]="rotationAngle" class="w-full">
+            <nz-option [nzValue]="90" nzLabel="90 degrees"></nz-option>
+            <nz-option [nzValue]="180" nzLabel="180 degrees"></nz-option>
+            <nz-option [nzValue]="270" nzLabel="270 degrees"></nz-option>
+          </nz-select>
+        </div>
+
+        <!-- Direction -->
+        <div class="mb-4">
+          <label class="form-label">Direction</label>
+          <nz-select [(ngModel)]="direction" class="w-full">
+            <nz-option nzValue="clockwise" nzLabel="Clockwise"></nz-option>
+            <nz-option nzValue="counterclockwise" nzLabel="Counter-clockwise"></nz-option>
+          </nz-select>
+        </div>
+
+        <!-- Apply Button -->
+        <button 
+          (click)="onRotate()"
+          [disabled]="loading"
+          class="btn-primary w-full py-3">
+          <i nz-icon nzType="check" nzTheme="outline" class="mr-2"></i>
+          Apply Rotation
+        </button>
+      </div>
+
+      <!-- Batch Rotation -->
+      <div class="p-4 border-b border-secondary-200">
+        <h3 class="font-semibold text-secondary-900 mb-3">Batch Rotation</h3>
+        
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-sm text-secondary-600">
+            {{ selectedPages.length }} pages selected
+          </span>
+          <button 
+            *ngIf="selectedPages.length > 0"
+            (click)="selectedPages = []"
+            class="text-sm text-danger-600 hover:text-danger-700">
+            Clear
+          </button>
+        </div>
+
+        <button 
+          (click)="onRotateSelected()"
+          [disabled]="selectedPages.length === 0 || loading"
+          class="btn-secondary w-full py-2">
+          <i nz-icon nzType="rotate-right" nzTheme="outline" class="mr-2"></i>
+          Rotate Selected Pages
+        </button>
+      </div>
+
+      <!-- Page Thumbnails -->
+      <div class="p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-semibold text-secondary-900">Page Thumbnails</h3>
+          <button 
+            (click)="showThumbnails = !showThumbnails"
+            class="text-sm text-primary-600 hover:text-primary-700">
+            {{ showThumbnails ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+
+        <div *ngIf="showThumbnails" class="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+          <div 
+            *ngFor="let page of [].constructor(maxPage); let i = index"
+            (click)="togglePageSelection(i + 1)"
+            class="relative aspect-[3/4] bg-secondary-100 rounded-lg border-2 cursor-pointer transition-all duration-200"
+            [class.border-primary-500]="isPageSelected(i + 1)"
+            [class.border-secondary-200]="!isPageSelected(i + 1)"
+            [class.bg-primary-50]="isPageSelected(i + 1)">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="text-2xl font-bold text-secondary-400">{{ i + 1 }}</span>
+            </div>
+            <div 
+              *ngIf="isPageSelected(i + 1)"
+              class="absolute top-1 right-1 w-5 h-5 bg-primary-500 rounded-full flex items-center justify-center">
+              <i nz-icon nzType="check" nzTheme="outline" class="text-white text-xs"></i>
+            </div>
+            <div class="absolute bottom-1 left-1 right-1 text-center">
+              <span class="text-xs text-secondary-500">
+                {{ pageRotations[i]?.rotation || 0 }}°
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

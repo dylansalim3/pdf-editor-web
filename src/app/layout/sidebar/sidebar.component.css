@@ -1,0 +1,66 @@
+/* Sidebar Styles */
+:host {
+  display: block;
+}
+
+aside {
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Active link indicator */
+.sidebar-link.active {
+  position: relative;
+}
+
+.sidebar-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  background-color: #2563eb;
+  border-radius: 0 2px 2px 0;
+}
+
+/* Scrollbar styling */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+/* Mobile responsive */
+@media (max-width: 1024px) {
+  aside {
+    transform: translateX(-100%);
+  }
+  
+  aside:not(.collapsed) {
+    transform: translateX(0);
+  }
+}
+
+/* Ensure smooth transitions */
+aside,
+.sidebar-link,
+.sidebar-link span {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

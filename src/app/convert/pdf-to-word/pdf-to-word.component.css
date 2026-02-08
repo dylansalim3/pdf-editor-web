@@ -1,0 +1,55 @@
+/* PDF to Word Converter Styles */
+:host {
+  display: block;
+}
+
+/* Upload zone specific styles */
+.upload-zone {
+  transition: all 0.3s ease;
+}
+
+.upload-zone:hover {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+}
+
+/* Progress bar custom styling */
+:host ::ng-deep .ant-progress-bg {
+  border-radius: 4px;
+}
+
+/* Preview area styling */
+pre {
+  line-height: 1.6;
+}
+
+/* Animation for conversion complete */
+@keyframes successPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.success-pulse {
+  animation: successPulse 1s ease-out;
+}
+
+/* Text preview scrollbar */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}

@@ -1,0 +1,157 @@
+<div class="h-full flex flex-col">
+  <!-- Page Header -->
+  <div class="bg-white border-b border-secondary-200 px-6 py-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="flex items-center space-x-2 mb-1">
+          <a routerLink="/" class="text-secondary-500 hover:text-secondary-700 text-sm">Home</a>
+          <span class="text-secondary-400">/</span>
+          <a routerLink="/tools" class="text-secondary-500 hover:text-secondary-700 text-sm">Tools</a>
+          <span class="text-secondary-400">/</span>
+          <span class="text-secondary-900 font-medium text-sm">Delete Pages</span>
+        </div>
+        <h1 class="text-2xl font-bold text-secondary-900">Delete PDF Pages</h1>
+        <p class="text-sm text-secondary-500 mt-1">Remove unwanted pages from your PDF</p>
+      </div>
+      <div class="flex items-center space-x-3">
+        <button (click)="onUndo()" class="btn-secondary" title="Undo">
+          <i nz-icon nzType="undo" nzTheme="outline" class="mr-2"></i>
+          Undo
+        </button>
+        <button (click)="onRedo()" class="btn-secondary" title="Redo">
+          <i nz-icon nzType="redo" nzTheme="outline" class="mr-2"></i>
+          Redo
+        </button>
+        <button (click)="onDownload()" class="btn-primary">
+          <i nz-icon nzType="download" nzTheme="outline" class="mr-2"></i>
+          Download
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex overflow-hidden">
+    <!-- PDF Viewer -->
+    <div class="flex-1 bg-secondary-800 relative">
+      <div *ngIf="loading" class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
+        <nz-spin nzSize="large" nzTip="Processing..."></nz-spin>
+      </div>
+      
+      <ngx-extended-pdf-viewer
+        [src]="src"
+        height="100%"
+        [useBrowserLocale]="true"
+        [showBookmarkButton]="false"
+        [showDownloadButton]="false"
+        [showPrintButton]="false"
+        [showPropertiesButton]="false"
+        [showOpenFileButton]="false"
+        [showHandToolButton]="true"
+        [showRotateButton]="false"
+        [textLayer]="true"
+        (pagesLoaded)="onPageLoaded($event)"
+        (pageChange)="onCurrentPageChanged($event)">
+      </ngx-extended-pdf-viewer>
+    </div>
+
+    <!-- Sidebar Controls -->
+    <div class="w-80 bg-white border-l border-secondary-200 flex flex-col overflow-y-auto">
+      <!-- Delete Mode -->
+      <div class="p-4 border-b border-secondary-200">
+        <h3 class="font-semibold text-secondary-900 mb-3">Delete Mode</h3>
+        <nz-radio-group [(ngModel)]="deleteMode" class="flex flex-col space-y-2">
+          <label nz-radio nzValue="single">
+            <span class="text-secondary-700">Single page</span>
+          </label>
+          <label nz-radio nzValue="range">
+            <span class="text-secondary-700">Page range</span>
+          </label>
+          <label nz-radio nzValue="multiple">
+            <span class="text-secondary-700">Multiple pages</span>
+          </label>
+        </nz-radio-group>
+      </div>
+
+      <!-- Single Page -->
+      <div class="p-4 border-b border-secondary-200" *ngIf="deleteMode === 'single'">
+        <h3 class="font-semibold text-secondary-900 mb-3">Page to Delete</h3>
+        <nz-input-number 
+          [(ngModel)]="singlePage" 
+          [nzMin]="1" 
+          [nzMax]="maxPage"
+          class="w-full">
+        </nz-input-number>
+        <p class="text-xs text-secondary-500 mt-2">Current: Page {{ currentPage }}</p>
+      </div>
+
+      <!-- Page Range -->
+      <div class="p-4 border-b border-secondary-200" *ngIf="deleteMode === 'range'">
+        <h3 class="font-semibold text-secondary-900 mb-3">Page Range</h3>
+        <div class="flex items-center space-x-2">
+          <nz-input-number 
+            [(ngModel)]="rangeStart" 
+            [nzMin]="1" 
+            [nzMax]="maxPage"
+            class="flex-1">
+          </nz-input-number>
+          <span class="text-secondary-500">to</span>
+          <nz-input-number 
+            [(ngModel)]="rangeEnd" 
+            [nzMin]="1" 
+            [nzMax]="maxPage"
+            class="flex-1">
+          </nz-input-number>
+        </div>
+      </div>
+
+      <!-- Multiple Pages Selection -->
+      <div class="p-4 border-b border-secondary-200" *ngIf="deleteMode === 'multiple'">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-semibold text-secondary-900">Select Pages</h3>
+          <span class="text-sm text-secondary-500">{{ selectedPages.length }} selected</span>
+        </div>
+        <button 
+          (click)="keepOnlySelected()"
+          [disabled]="selectedPages.length === 0"
+          class="btn-secondary w-full py-2 text-sm mb-3">
+          <i nz-icon nzType="filter" nzTheme="outline" class="mr-2"></i>
+          Keep Only Selected
+        </button>
+      </div>
+
+      <!-- Page Thumbnails -->
+      <div class="p-4 border-b border-secondary-200">
+        <h3 class="font-semibold text-secondary-900 mb-3">Pages ({{ maxPage }} total)</h3>
+        <div class="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+          <div 
+            *ngFor="let page of [].constructor(maxPage); let i = index"
+            (click)="deleteMode === 'multiple' ? togglePageSelection(i + 1) : singlePage = i + 1"
+            class="relative aspect-[3/4] rounded-lg border-2 cursor-pointer transition-all duration-200 flex items-center justify-center"
+            [class.bg-danger-50]="isPageMarkedForDeletion(i + 1)"
+            [class.border-danger-500]="isPageMarkedForDeletion(i + 1)"
+            [class.bg-primary-50]="isPageSelected(i + 1) && !isPageMarkedForDeletion(i + 1)"
+            [class.border-primary-500]="isPageSelected(i + 1) && !isPageMarkedForDeletion(i + 1)"
+            [class.border-secondary-200]="!isPageSelected(i + 1) && !isPageMarkedForDeletion(i + 1)"
+            [class.bg-secondary-100]="!isPageSelected(i + 1) && !isPageMarkedForDeletion(i + 1)">
+            <span class="text-lg font-bold" [class.text-danger-600]="isPageMarkedForDeletion(i + 1)" [class.text-secondary-400]="!isPageMarkedForDeletion(i + 1)">{{ i + 1 }}</span>
+            <div *ngIf="isPageSelected(i + 1) || isPageMarkedForDeletion(i + 1)" class="absolute top-1 right-1">
+              <i nz-icon [nzType]="isPageMarkedForDeletion(i + 1) ? 'close' : 'check'" nzTheme="outline" class="text-xs" [class.text-danger-500]="isPageMarkedForDeletion(i + 1)" [class.text-primary-500]="isPageSelected(i + 1)"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delete Button -->
+      <div class="p-4">
+        <button 
+          (click)="onDelete()"
+          [disabled]="loading"
+          class="btn-danger w-full py-3">
+          <i nz-icon nzType="delete" nzTheme="outline" class="mr-2"></i>
+          {{ loading ? 'Deleting...' : 'Delete Pages' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

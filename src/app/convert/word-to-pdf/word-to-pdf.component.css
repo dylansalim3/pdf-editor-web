@@ -1,0 +1,57 @@
+/* Word to PDF Converter Styles */
+:host {
+  display: block;
+}
+
+/* Upload zone specific styles */
+.upload-zone {
+  transition: all 0.3s ease;
+}
+
+.upload-zone:hover {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+}
+
+/* Progress bar custom styling */
+:host ::ng-deep .ant-progress-bg {
+  border-radius: 4px;
+}
+
+/* Checkbox alignment */
+:host ::ng-deep .ant-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+:host ::ng-deep .ant-checkbox + span {
+  padding-left: 8px;
+}
+
+/* Card step indicator */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* Success state animation */
+@keyframes successPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.success-pulse {
+  animation: successPulse 1s ease-out;
+}

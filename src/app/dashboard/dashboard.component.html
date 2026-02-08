@@ -1,0 +1,131 @@
+<div class="max-w-7xl mx-auto">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Welcome back! Choose a tool to get started with your PDF editing.</p>
+      </div>
+      <a routerLink="/upload" class="btn-primary">
+        <i nz-icon nzType="upload" nzTheme="outline" class="mr-2"></i>
+        Upload PDF
+      </a>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <section class="mb-10">
+    <h2 class="text-lg font-semibold text-secondary-900 mb-4">Quick Actions</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <a 
+        *ngFor="let tool of quickActions"
+        [routerLink]="tool.route"
+        class="card p-6 hover:shadow-lg transition-shadow duration-200 group">
+        <div class="flex flex-col items-center text-center">
+          <div 
+            class="w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-transform duration-200 group-hover:scale-110"
+            [class.bg-blue-100]="tool.color === 'blue'"
+            [class.text-blue-600]="tool.color === 'blue'"
+            [class.bg-red-100]="tool.color === 'red'"
+            [class.text-red-600]="tool.color === 'red'"
+            [class.bg-purple-100]="tool.color === 'purple'"
+            [class.text-purple-600]="tool.color === 'purple'"
+            [class.bg-green-100]="tool.color === 'green'"
+            [class.text-green-600]="tool.color === 'green'">
+            <i nz-icon [nzType]="tool.icon" nzTheme="outline" class="text-2xl"></i>
+          </div>
+          <h3 class="font-medium text-secondary-900">{{ tool.name }}</h3>
+          <p class="text-xs text-secondary-500 mt-1">{{ tool.description }}</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Recent Files -->
+  <section class="mb-10" *ngIf="recentFiles.length > 0">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-secondary-900">Recent Files</h2>
+      <a routerLink="/files" class="text-sm text-primary-600 hover:text-primary-700 font-medium">
+        View All
+      </a>
+    </div>
+    
+    <div class="card">
+      <div class="divide-y divide-secondary-200">
+        <div 
+          *ngFor="let file of recentFiles"
+          class="flex items-center justify-between px-6 py-4 hover:bg-secondary-50 transition-colors duration-200">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+              <i nz-icon nzType="file-pdf" nzTheme="fill" class="text-red-600 text-xl"></i>
+            </div>
+            <div>
+              <p class="font-medium text-secondary-900">{{ file.name }}</p>
+              <p class="text-sm text-secondary-500">{{ file.modified }}</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button class="btn-icon text-secondary-400 hover:text-secondary-600">
+              <i nz-icon nzType="edit" nzTheme="outline"></i>
+            </button>
+            <button class="btn-icon text-secondary-400 hover:text-danger-600">
+              <i nz-icon nzType="delete" nzTheme="outline"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- All Tools -->
+  <section>
+    <h2 class="text-lg font-semibold text-secondary-900 mb-4">All Tools</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div *ngFor="let category of toolCategories" class="card">
+        <div class="card-header">
+          <h3 class="font-semibold text-secondary-900">{{ category.title }}</h3>
+        </div>
+        <div class="card-body py-2">
+          <div class="space-y-1">
+            <a
+              *ngFor="let tool of category.tools"
+              [routerLink]="tool.route"
+              class="flex items-center p-3 rounded-lg hover:bg-secondary-50 transition-colors duration-200 group">
+              <div 
+                class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
+                [class.bg-blue-100]="tool.color === 'blue'"
+                [class.text-blue-600]="tool.color === 'blue'"
+                [class.bg-red-100]="tool.color === 'red'"
+                [class.text-red-600]="tool.color === 'red'"
+                [class.bg-purple-100]="tool.color === 'purple'"
+                [class.text-purple-600]="tool.color === 'purple'"
+                [class.bg-green-100]="tool.color === 'green'"
+                [class.text-green-600]="tool.color === 'green'"
+                [class.bg-orange-100]="tool.color === 'orange'"
+                [class.text-orange-600]="tool.color === 'orange'"
+                [class.bg-cyan-100]="tool.color === 'cyan'"
+                [class.text-cyan-600]="tool.color === 'cyan'"
+                [class.bg-indigo-100]="tool.color === 'indigo'"
+                [class.text-indigo-600]="tool.color === 'indigo'"
+                [class.bg-pink-100]="tool.color === 'pink'"
+                [class.text-pink-600]="tool.color === 'pink'"
+                [class.bg-teal-100]="tool.color === 'teal'"
+                [class.text-teal-600]="tool.color === 'teal'"
+                [class.bg-yellow-100]="tool.color === 'yellow'"
+                [class.text-yellow-600]="tool.color === 'yellow'"
+                [class.bg-gray-100]="tool.color === 'gray'"
+                [class.text-gray-600]="tool.color === 'gray'">
+                <i nz-icon [nzType]="tool.icon" nzTheme="outline" class="text-lg"></i>
+              </div>
+              <div class="ml-3 flex-1 min-w-0">
+                <p class="font-medium text-secondary-900 truncate">{{ tool.name }}</p>
+                <p class="text-xs text-secondary-500 truncate">{{ tool.description }}</p>
+              </div>
+              <i nz-icon nzType="right" nzTheme="outline" class="text-secondary-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

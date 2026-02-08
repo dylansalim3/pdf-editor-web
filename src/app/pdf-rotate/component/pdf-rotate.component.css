@@ -1,1 +1,85 @@
+/* Upload Container */
+.upload-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
 
+/* Mobile responsive adjustments */
+@media (max-width: 767px) {
+  .upload-container {
+    padding: 0.5rem;
+  }
+  
+  .mobile-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .mobile-description {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  
+  .upload-icon {
+    font-size: 48px !important;
+  }
+  
+  .mobile-text {
+    font-size: 0.95rem;
+  }
+  
+  .mobile-hint {
+    font-size: 0.8rem;
+  }
+  
+  .button-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .action-btn {
+    width: 100%;
+    min-height: 44px;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Make upload area more compact on mobile */
+  .ant-upload-drag {
+    padding: 20px 0 !important;
+  }
+}
+
+/* Tablet and up */
+@media (min-width: 768px) {
+  .upload-container {
+    padding: 2rem;
+  }
+  
+  .mobile-title {
+    font-size: 2.5rem;
+  }
+  
+  .mobile-description {
+    font-size: 1.125rem;
+  }
+  
+  .upload-icon {
+    font-size: 64px !important;
+  }
+  
+  .action-btn {
+    min-width: 150px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .upload-container {
+    padding: 3rem;
+  }
+  
+  .mobile-title {
+    font-size: 3rem;
+  }
+}

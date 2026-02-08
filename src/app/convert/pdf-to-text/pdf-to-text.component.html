@@ -1,0 +1,235 @@
+<div class="max-w-5xl mx-auto">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="flex items-center space-x-2 mb-2">
+      <a routerLink="/" class="text-secondary-500 hover:text-secondary-700 text-sm">Home</a>
+      <span class="text-secondary-400">/</span>
+      <a routerLink="/convert" class="text-secondary-500 hover:text-secondary-700 text-sm">Convert</a>
+      <span class="text-secondary-400">/</span>
+      <span class="text-secondary-900 font-medium text-sm">PDF to Text</span>
+    </div>
+    <h1 class="page-title">PDF to Text Extractor</h1>
+    <p class="page-subtitle">Extract plain text from PDF documents with advanced options</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Left Panel: Upload & Options -->
+    <div class="lg:col-span-1 space-y-6">
+      <!-- Upload -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="font-semibold text-secondary-900 flex items-center">
+            <i nz-icon nzType="upload" nzTheme="outline" class="mr-2 text-primary-600"></i>
+            Upload PDF
+          </h3>
+        </div>
+        <div class="card-body">
+          <nz-upload
+            nzType="drag"
+            [nzMultiple]="false"
+            [nzBeforeUpload]="beforeUpload"
+            [(nzFileList)]="fileList"
+            class="upload-zone"
+            [class.dragover]="false">
+            <p class="ant-upload-drag-icon">
+              <i nz-icon nzType="file-pdf" nzTheme="outline" class="text-4xl text-red-500"></i>
+            </p>
+            <p class="ant-upload-text text-sm font-medium text-secondary-700 mb-1">
+              Drop PDF here
+            </p>
+            <p class="ant-upload-hint text-xs text-secondary-500">
+              or click to browse
+            </p>
+          </nz-upload>
+
+          <!-- Selected File -->
+          <div *ngIf="fileList.length > 0" class="mt-4 p-3 bg-red-50 rounded-lg border border-red-200">
+            <div class="flex items-center space-x-2">
+              <i nz-icon nzType="file-pdf" nzTheme="outline" class="text-xl text-red-600"></i>
+              <div class="flex-1 min-w-0">
+                <p class="font-medium text-secondary-900 text-sm truncate">{{ fileList[0].name }}</p>
+                <p class="text-xs text-secondary-500">{{ formatFileSize(fileList[0].size || 0) }}</p>
+              </div>
+              <button 
+                (click)="fileList = []"
+                class="btn-icon text-secondary-400 hover:text-danger-600">
+                <i nz-icon nzType="close" nzTheme="outline"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Options -->
+      <div class="card" *ngIf="fileList.length > 0">
+        <div class="card-header">
+          <h3 class="font-semibold text-secondary-900">Extraction Options</h3>
+        </div>
+        <div class="card-body space-y-4">
+          <!-- Extraction Mode -->
+          <div>
+            <label class="form-label">Extract</label>
+            <nz-radio-group [(ngModel)]="options.extractionMode" class="flex flex-col space-y-2">
+              <label nz-radio nzValue="all">
+                <span class="text-secondary-700 text-sm">All pages ({{ totalPages }} total)</span>
+              </label>
+              <label nz-radio nzValue="range">
+                <span class="text-secondary-700 text-sm">Page range</span>
+              </label>
+              <label nz-radio nzValue="pages">
+                <span class="text-secondary-700 text-sm">Specific pages</span>
+              </label>
+            </nz-radio-group>
+          </div>
+
+          <!-- Page Range -->
+          <div *ngIf="options.extractionMode === 'range'" class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="form-label text-xs">From</label>
+              <nz-input-number 
+                [(ngModel)]="options.startPage" 
+                [nzMin]="1" 
+                [nzMax]="totalPages"
+                class="w-full">
+              </nz-input-number>
+            </div>
+            <div>
+              <label class="form-label text-xs">To</label>
+              <nz-input-number 
+                [(ngModel)]="options.endPage" 
+                [nzMin]="1" 
+                [nzMax]="totalPages"
+                class="w-full">
+              </nz-input-number>
+            </div>
+          </div>
+
+          <!-- Specific Pages -->
+          <div *ngIf="options.extractionMode === 'pages'">
+            <label class="form-label text-xs">Page numbers (e.g., 1,3,5-7)</label>
+            <input 
+              type="text" 
+              [(ngModel)]="options.specificPages"
+              placeholder="1,3,5-7"
+              class="form-input">
+          </div>
+
+          <!-- OCR Options -->
+          <div class="pt-4 border-t border-secondary-200">
+            <label nz-checkbox [(ngModel)]="options.useOcr" class="mb-3">
+              <span class="text-secondary-700 text-sm">Use OCR for scanned PDFs</span>
+            </label>
+            
+            <div *ngIf="options.useOcr" class="mt-2">
+              <label class="form-label text-xs">Language</label>
+              <nz-select [(ngModel)]="options.ocrLanguage" class="w-full" nzSize="small">
+                <nz-option 
+                  *ngFor="let lang of ocrLanguages" 
+                  [nzValue]="lang.value" 
+                  [nzLabel]="lang.label">
+                </nz-option>
+              </nz-select>
+            </div>
+          </div>
+
+          <!-- Format Options -->
+          <div class="pt-4 border-t border-secondary-200 space-y-2">
+            <label nz-checkbox [(ngModel)]="options.preserveLineBreaks">
+              <span class="text-secondary-700 text-sm">Preserve line breaks</span>
+            </label>
+            <label nz-checkbox [(ngModel)]="options.includePageNumbers">
+              <span class="text-secondary-700 text-sm">Include page numbers</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Extract Button -->
+      <div class="card" *ngIf="fileList.length > 0 && !extracted">
+        <div class="card-body">
+          <button 
+            (click)="onExtract()"
+            [disabled]="extracting || !pageRangeValid"
+            class="btn-primary w-full py-3">
+            <i nz-icon nzType="file-text" nzTheme="outline" class="mr-2"></i>
+            <span *ngIf="!extracting">Extract Text</span>
+            <span *ngIf="extracting">Extracting...</span>
+          </button>
+
+          <!-- Progress -->
+          <div *ngIf="extracting" class="mt-4">
+            <nz-progress 
+              [nzPercent]="extractionProgress" 
+              [nzStatus]="extractionProgress < 100 ? 'active' : 'success'"
+              nzStrokeWidth="6"
+              nzSize="small">
+            </nz-progress>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel: Text Preview -->
+    <div class="lg:col-span-2">
+      <div class="card h-full">
+        <div class="card-header flex items-center justify-between">
+          <h3 class="font-semibold text-secondary-900 flex items-center">
+            <i nz-icon nzType="file-text" nzTheme="outline" class="mr-2 text-primary-600"></i>
+            Extracted Text
+          </h3>
+          <div class="flex items-center space-x-2" *ngIf="extracted">
+            <span class="text-sm text-secondary-500">{{ getSelectedPagesText() }}</span>
+            <span class="badge badge-success">{{ extractedText.length.toLocaleString() }} chars</span>
+          </div>
+        </div>
+        <div class="card-body p-0 flex flex-col h-[600px]">
+          <!-- Empty State -->
+          <div *ngIf="!extracted" class="flex-1 flex items-center justify-center p-8">
+            <div class="text-center">
+              <div class="w-20 h-20 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i nz-icon nzType="file-text" nzTheme="outline" class="text-4xl text-secondary-400"></i>
+              </div>
+              <p class="text-secondary-500 mb-2">Upload a PDF and click Extract to see the text here</p>
+              <p class="text-sm text-secondary-400">The extracted text will appear in this area</p>
+            </div>
+          </div>
+
+          <!-- Text Content -->
+          <div *ngIf="extracted" class="flex-1 flex flex-col">
+            <!-- Toolbar -->
+            <div class="flex items-center justify-between p-4 border-b border-secondary-200 bg-secondary-50">
+              <span class="text-sm text-secondary-600">
+                {{ extractedText.split('\\n').length }} lines extracted
+              </span>
+              <div class="flex items-center space-x-2">
+                <button (click)="onCopy()" class="btn-secondary text-sm py-1.5 px-3">
+                  <i nz-icon nzType="copy" nzTheme="outline" class="mr-1"></i>
+                  Copy
+                </button>
+                <button (click)="onDownload()" class="btn-primary text-sm py-1.5 px-3">
+                  <i nz-icon nzType="download" nzTheme="outline" class="mr-1"></i>
+                  Download .txt
+                </button>
+              </div>
+            </div>
+
+            <!-- Text Area -->
+            <textarea 
+              [(ngModel)]="extractedText"
+              class="flex-1 w-full p-4 resize-none border-0 focus:ring-0 font-mono text-sm leading-relaxed text-secondary-700 bg-white"
+              placeholder="Extracted text will appear here..."
+              readonly></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Button -->
+  <div class="mt-6 text-center" *ngIf="extracted">
+    <button (click)="onReset()" class="btn-secondary">
+      <i nz-icon nzType="reload" nzTheme="outline" class="mr-2"></i>
+      Extract Another PDF
+    </button>
+  </div>
+</div>

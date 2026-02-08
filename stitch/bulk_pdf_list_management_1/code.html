@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bulk PDF List Management - PDF Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#3b82f6", // Blue from the screenshot (similar to default blue-500)
+              "primary-hover": "#2563eb",
+              "background-light": "#f8fafc",
+              "background-dark": "#0f172a",
+              "surface-light": "#ffffff",
+              "surface-dark": "#1e293b",
+              "border-light": "#e2e8f0",
+              "border-dark": "#334155",
+              "text-primary-light": "#1e293b",
+              "text-primary-dark": "#f1f5f9",
+              "text-secondary-light": "#64748b",
+              "text-secondary-dark": "#94a3b8",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+            },
+          },
+        },
+      };
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-primary-light dark:text-text-primary-dark h-screen overflow-hidden flex transition-colors duration-200">
+<aside class="w-64 bg-surface-light dark:bg-surface-dark border-r border-border-light dark:border-border-dark flex-shrink-0 flex flex-col h-full overflow-y-auto">
+<div class="p-6 flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-icons-outlined text-xl">description</span>
+</div>
+<span class="text-xl font-bold tracking-tight">PDF Editor</span>
+</div>
+<nav class="flex-1 px-4 space-y-8">
+<div>
+<h3 class="text-xs font-semibold text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider mb-4 px-2">Main</h3>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium rounded-md text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons-outlined text-xl">dashboard</span>
+                            Dashboard
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium rounded-md text-primary bg-blue-50 dark:bg-blue-900/20" href="#">
+<span class="material-icons-outlined text-xl">file_upload</span>
+                            Bulk Uploads
+                        </a>
+</li>
+</ul>
+</div>
+<div>
+<h3 class="text-xs font-semibold text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider mb-4 px-2">Page Tools</h3>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium rounded-md text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons-outlined text-xl">rotate_right</span>
+                            Rotate Pages
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium rounded-md text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons-outlined text-xl">delete_outline</span>
+                            Delete Pages
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium rounded-md text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons-outlined text-xl">low_priority</span>
+                            Reorder Pages
+                        </a>
+</li>
+</ul>
+</div>
+<div>
+<h3 class="text-xs font-semibold text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider mb-4 px-2">Operations</h3>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium rounded-md text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons-outlined text-xl">call_merge</span>
+                            Merge PDFs
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium rounded-md text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons-outlined text-xl">call_split</span>
+                            Split PDF
+                        </a>
+</li>
+</ul>
+</div>
+</nav>
+<div class="p-4 border-t border-border-light dark:border-border-dark mt-auto">
+<button class="flex items-center gap-3 w-full p-2 rounded-md hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
+<div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-slate-700 flex items-center justify-center">
+<span class="material-icons-outlined text-sm text-gray-500 dark:text-gray-400">person</span>
+</div>
+<div class="flex-1 text-left">
+<p class="text-sm font-medium text-text-primary-light dark:text-text-primary-dark">Alex Designer</p>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Pro Plan</p>
+</div>
+<span class="material-icons-outlined text-gray-400">settings</span>
+</button>
+</div>
+</aside>
+<main class="flex-1 flex flex-col h-full overflow-hidden bg-background-light dark:bg-background-dark">
+<header class="h-16 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark flex items-center justify-between px-8 flex-shrink-0 z-10">
+<div class="flex items-center gap-2 text-sm text-text-secondary-light dark:text-text-secondary-dark">
+<span>Home</span>
+<span class="material-icons-outlined text-xs">chevron_right</span>
+<span class="text-text-primary-light dark:text-text-primary-dark font-medium">Bulk Operations</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-icons-outlined absolute left-3 top-2.5 text-gray-400">search</span>
+<input class="pl-10 pr-4 py-2 text-sm bg-gray-50 dark:bg-slate-800 border-none rounded-lg focus:ring-2 focus:ring-primary w-64 text-text-primary-light dark:text-text-primary-dark placeholder-gray-400" placeholder="Search files..." type="text"/>
+</div>
+<button class="p-2 text-gray-500 hover:text-primary transition-colors">
+<span class="material-icons-outlined">notifications</span>
+</button>
+<button class="p-2 text-gray-500 hover:text-primary transition-colors">
+<span class="material-icons-outlined">help_outline</span>
+</button>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto p-8">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+<div>
+<h1 class="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark">Bulk Operations Queue</h1>
+<p class="text-text-secondary-light dark:text-text-secondary-dark mt-1">Manage, process, and export your uploaded document list.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-2.5 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 text-text-primary-light dark:text-text-primary-dark font-medium transition-all shadow-sm">
+<span class="material-icons-outlined text-lg">download</span>
+                        Download All
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-lg font-medium transition-all shadow-md shadow-blue-500/20">
+<span class="material-icons-outlined text-lg">auto_mode</span>
+                        Scrape All Data
+                    </button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-border-light dark:border-border-dark shadow-sm flex items-center gap-4">
+<div class="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
+<span class="material-icons-outlined">folder_open</span>
+</div>
+<div>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark font-medium">Total Files</p>
+<p class="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark">24</p>
+</div>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-border-light dark:border-border-dark shadow-sm flex items-center gap-4">
+<div class="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400">
+<span class="material-icons-outlined">check_circle</span>
+</div>
+<div>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark font-medium">Processed</p>
+<p class="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark">18</p>
+</div>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-border-light dark:border-border-dark shadow-sm flex items-center gap-4">
+<div class="p-3 rounded-lg bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400">
+<span class="material-icons-outlined">schedule</span>
+</div>
+<div>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark font-medium">Pending</p>
+<p class="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark">6</p>
+</div>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-border-light dark:border-border-dark shadow-sm flex items-center justify-between cursor-pointer hover:border-primary transition-colors group">
+<div class="flex items-center gap-4">
+<div class="p-3 rounded-lg bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-400 group-hover:text-primary group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
+<span class="material-icons-outlined">add</span>
+</div>
+<div>
+<p class="text-sm font-medium text-text-primary-light dark:text-text-primary-dark">Add More</p>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Upload files</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl shadow-sm overflow-hidden">
+<div class="px-6 py-4 border-b border-border-light dark:border-border-dark flex items-center justify-between bg-gray-50/50 dark:bg-slate-800/50">
+<div class="flex items-center gap-3">
+<input class="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4 bg-transparent" type="checkbox"/>
+<span class="text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark">Select All</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-xs font-medium px-3 py-1.5 rounded-md bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-text-secondary-light dark:text-text-secondary-dark hover:text-primary dark:hover:text-white transition-colors">Filter</button>
+<button class="text-xs font-medium px-3 py-1.5 rounded-md bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-text-secondary-light dark:text-text-secondary-dark hover:text-primary dark:hover:text-white transition-colors">Sort</button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-4 px-6 py-3 border-b border-border-light dark:border-border-dark bg-gray-50 dark:bg-slate-800/50 text-xs font-semibold text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider">
+<div class="col-span-4 pl-8">Document Name</div>
+<div class="col-span-2">Size</div>
+<div class="col-span-2">Pages</div>
+<div class="col-span-2">Status</div>
+<div class="col-span-2 text-right">Actions</div>
+</div>
+<div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-border-light dark:border-border-dark items-center hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors group">
+<div class="col-span-4 flex items-center gap-3">
+<input class="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4 bg-transparent" type="checkbox"/>
+<div class="w-10 h-10 rounded bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 flex-shrink-0">
+<span class="material-icons-outlined text-xl">picture_as_pdf</span>
+</div>
+<div class="min-w-0">
+<p class="text-sm font-medium text-text-primary-light dark:text-text-primary-dark truncate">Q3_Financial_Report_2023.pdf</p>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Added today, 10:23 AM</p>
+</div>
+</div>
+<div class="col-span-2 text-sm text-text-secondary-light dark:text-text-secondary-dark">2.4 MB</div>
+<div class="col-span-2 text-sm text-text-secondary-light dark:text-text-secondary-dark">12 Pages</div>
+<div class="col-span-2">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                            Ready
+                        </span>
+</div>
+<div class="col-span-2 flex justify-end">
+<div class="relative group/dropdown">
+<button class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-primary bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-md transition-colors">
+                                Quick Action
+                                <span class="material-icons-outlined text-sm">expand_more</span>
+</button>
+<div class="hidden group-hover/dropdown:block absolute right-0 top-full mt-1 w-40 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-border-light dark:border-border-dark z-20 py-1">
+<a class="block px-4 py-2 text-xs text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center gap-2" href="#">
+<span class="material-icons-outlined text-sm text-gray-400">edit</span> Edit PDF
+                                </a>
+<a class="block px-4 py-2 text-xs text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center gap-2" href="#">
+<span class="material-icons-outlined text-sm text-gray-400">compress</span> Compress
+                                </a>
+<a class="block px-4 py-2 text-xs text-text-primary-light dark:text-text-primary-dark hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center gap-2" href="#">
+<span class="material-icons-outlined text-sm text-gray-400">draw</span> Sign
+                                </a>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-border-light dark:border-border-dark items-center hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="col-span-4 flex items-center gap-3">
+<input class="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4 bg-transparent" type="checkbox"/>
+<div class="w-10 h-10 rounded bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 flex-shrink-0">
+<span class="material-icons-outlined text-xl">picture_as_pdf</span>
+</div>
+<div class="min-w-0">
+<p class="text-sm font-medium text-text-primary-light dark:text-text-primary-dark truncate">Contract_Draft_v4.pdf</p>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Added today, 09:45 AM</p>
+</div>
+</div>
+<div class="col-span-2 text-sm text-text-secondary-light dark:text-text-secondary-dark">856 KB</div>
+<div class="col-span-2 text-sm text-text-secondary-light dark:text-text-secondary-dark">4 Pages</div>
+<div class="col-span-2">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
+<span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+                            Processing
+                        </span>
+</div>
+<div class="col-span-2 flex justify-end">
+<button class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-400 bg-gray-100 dark:bg-slate-700 dark:text-gray-500 rounded-md cursor-not-allowed" disabled="">
+                            Quick Action
+                            <span class="material-icons-outlined text-sm">expand_more</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-border-light dark:border-border-dark items-center hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="col-span-4 flex items-center gap-3">
+<input class="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4 bg-transparent" type="checkbox"/>
+<div class="w-10 h-10 rounded bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 flex-shrink-0">
+<span class="material-icons-outlined text-xl">picture_as_pdf</span>
+</div>
+<div class="min-w-0">
+<p class="text-sm font-medium text-text-primary-light dark:text-text-primary-dark truncate">Invoice_Batch_Oct.pdf</p>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Added yesterday</p>
+</div>
+</div>
+<div class="col-span-2 text-sm text-text-secondary-light dark:text-text-secondary-dark">14.2 MB</div>
+<div class="col-span-2 text-sm text-text-secondary-light dark:text-text-secondary-dark">156 Pages</div>
+<div class="col-span-2">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                            Compressed
+                        </span>
+</div>
+<div class="col-span-2 flex justify-end">
+<div class="relative group/dropdown">
+<button class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-primary bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-md transition-colors">
+                                Quick Action
+                                <span class="material-icons-outlined text-sm">expand_more</span>
+</button>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-border-light dark:border-border-dark items-center hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="col-span-4 flex items-center gap-3">
+<input class="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4 bg-transparent" type="checkbox"/>
+<div class="w-10 h-10 rounded bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 flex-shrink-0">
+<span class="material-icons-outlined text-xl">picture_as_pdf</span>
+</div>
+<div class="min-w-0">
+<p class="text-sm font-medium text-text-primary-light dark:text-text-primary-dark truncate">Marketing_Assets_2024.pdf</p>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Added yesterday</p>
+</div>
+</div>
+<div class="col-span-2 text-sm text-text-secondary-light dark:text-text-secondary-dark">5.1 MB</div>
+<div class="col-span-2 text-sm text-text-secondary-light dark:text-text-secondary-dark">23 Pages</div>
+<div class="col-span-2">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                            Ready
+                        </span>
+</div>
+<div class="col-span-2 flex justify-end">
+<div class="relative group/dropdown">
+<button class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-primary bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-md transition-colors">
+                                Quick Action
+                                <span class="material-icons-outlined text-sm">expand_more</span>
+</button>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-border-light dark:border-border-dark items-center bg-blue-50/50 dark:bg-blue-900/10 transition-colors">
+<div class="col-span-4 flex items-center gap-3">
+<input checked="" class="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4 bg-transparent" type="checkbox"/>
+<div class="w-10 h-10 rounded bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 flex-shrink-0">
+<span class="material-icons-outlined text-xl">picture_as_pdf</span>
+</div>
+<div class="min-w-0">
+<p class="text-sm font-medium text-text-primary-light dark:text-text-primary-dark truncate">Employee_Handbook_Rev2.pdf</p>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Added 2 days ago</p>
+</div>
+</div>
+<div class="col-span-2 text-sm text-text-secondary-light dark:text-text-secondary-dark">1.8 MB</div>
+<div class="col-span-2 text-sm text-text-secondary-light dark:text-text-secondary-dark">45 Pages</div>
+<div class="col-span-2">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
+<span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                            Signed
+                        </span>
+</div>
+<div class="col-span-2 flex justify-end">
+<div class="relative group/dropdown">
+<button class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-primary bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-md transition-colors">
+                                Quick Action
+                                <span class="material-icons-outlined text-sm">expand_more</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-6 px-2">
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">Showing <span class="font-medium text-text-primary-light dark:text-text-primary-dark">1-5</span> of <span class="font-medium text-text-primary-light dark:text-text-primary-dark">24</span> files</p>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-lg border border-border-light dark:border-border-dark text-gray-400 hover:text-text-primary-light dark:hover:text-text-primary-dark disabled:opacity-50" disabled="">
+<span class="material-icons-outlined text-sm">chevron_left</span>
+</button>
+<button class="px-3 py-1.5 text-sm font-medium rounded-lg bg-primary text-white">1</button>
+<button class="px-3 py-1.5 text-sm font-medium rounded-lg text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-slate-800">2</button>
+<button class="px-3 py-1.5 text-sm font-medium rounded-lg text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-slate-800">3</button>
+<span class="text-gray-400">...</span>
+<button class="px-3 py-1.5 text-sm font-medium rounded-lg text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-slate-800">5</button>
+<button class="p-2 rounded-lg border border-border-light dark:border-border-dark text-text-secondary-light dark:text-text-secondary-dark hover:text-text-primary-light dark:hover:text-text-primary-dark">
+<span class="material-icons-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<div class="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-surface-light dark:bg-surface-dark shadow-xl border border-border-light dark:border-border-dark rounded-full px-6 py-3 flex items-center gap-6 z-50 animate-bounce-in">
+<span class="text-sm font-semibold text-text-primary-light dark:text-text-primary-dark border-r border-border-light dark:border-border-dark pr-6">1 Selected</span>
+<div class="flex items-center gap-2">
+<button class="p-2 text-text-secondary-light dark:text-text-secondary-dark hover:text-primary transition-colors tooltip-wrapper relative group">
+<span class="material-icons-outlined">delete</span>
+<span class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Delete</span>
+</button>
+<button class="p-2 text-text-secondary-light dark:text-text-secondary-dark hover:text-primary transition-colors tooltip-wrapper relative group">
+<span class="material-icons-outlined">download</span>
+<span class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Download</span>
+</button>
+<button class="p-2 text-text-secondary-light dark:text-text-secondary-dark hover:text-primary transition-colors tooltip-wrapper relative group">
+<span class="material-icons-outlined">drive_file_move</span>
+<span class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Move</span>
+</button>
+</div>
+<div class="h-4 w-px bg-border-light dark:bg-border-dark"></div>
+<button class="text-sm font-medium text-primary hover:text-primary-hover">Clear Selection</button>
+</div>
+
+</body></html>

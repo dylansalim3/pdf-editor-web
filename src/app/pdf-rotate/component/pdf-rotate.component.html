@@ -1,30 +1,36 @@
-<div>
-  <div id="title" class="text-center">
-    <h1 nz-typography><b>PDF Editor</b></h1>
-    <p class="text-lg">Your one stop PDF Editing Tools. Supports Rotate Pages, Moving pages, Delete Pages within PDF and Adding Watermark to PDF </p>
+<div class="upload-container">
+  <div id="title" class="text-center p-4">
+    <h1 nz-typography class="mobile-title"><b>PDF Editor</b></h1>
+    <p class="text-lg mobile-description">
+      Your one-stop PDF editing tool. Supports rotating pages, moving pages, deleting pages, adding watermarks, and merging PDFs.
+    </p>
   </div>
 
-  <nz-upload nzType="drag" [(nzFileList)]="fileList" nzAccept="application/pdf" [nzBeforeUpload]="onUploadFile">
-    <p class="ant-upload-drag-icon">
-      <i nz-icon nzType="inbox"></i>
-    </p>
-    <p class="ant-upload-text">Click or drag file to this area to upload</p>
-    <p class="ant-upload-hint">
-      Upload PDF file here
-    </p>
-  </nz-upload>
-  <div class="flex justify-content-center pt-2">
-    <nz-space>
-      <nz-space-item>
-        <button nz-button nzType="primary" (click)="onSubmitClick()" [disabled]="fileList.length<=0">Submit</button>
-      </nz-space-item>
-      <nz-space-item>
-        <button nz-button nzType="danger" (click)="onCancelClick()">Cancel</button>
-      </nz-space-item>
+  <div class="upload-area p-4">
+    <nz-upload 
+      nzType="drag" 
+      [(nzFileList)]="fileList" 
+      nzAccept="application/pdf" 
+      [nzBeforeUpload]="onUploadFile"
+      class="responsive-upload">
+      <p class="ant-upload-drag-icon">
+        <i nz-icon nzType="inbox" class="upload-icon"></i>
+      </p>
+      <p class="ant-upload-text mobile-text">Click or drag PDF file here to upload</p>
+      <p class="ant-upload-hint mobile-hint">
+        Supports PDF files only
+      </p>
+    </nz-upload>
+  </div>
+  
+  <div class="flex flex-wrap justify-content-center pt-2 pb-4 button-container">
+    <nz-space nzSize="middle">
+      <button nz-button nzType="primary" (click)="onSubmitClick()" [disabled]="fileList.length<=0" class="action-btn">
+        <i nz-icon nzType="edit" nzTheme="outline"></i> Start Editing
+      </button>
+      <button nz-button nzType="default" (click)="onCancelClick()" class="action-btn">
+        <i nz-icon nzType="close" nzTheme="outline"></i> Cancel
+      </button>
     </nz-space>
   </div>
-
-
-
 </div>
-

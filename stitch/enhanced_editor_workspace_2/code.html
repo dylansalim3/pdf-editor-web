@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Enhanced PDF Editor Workspace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3B82F6", // Blue similar to screenshot
+                        "primary-hover": "#2563EB",
+                        "background-light": "#F9FAFB", // Gray-50
+                        "background-dark": "#111827", // Gray-900
+                        "surface-light": "#FFFFFF",
+                        "surface-dark": "#1F2937", // Gray-800
+                        "border-light": "#E5E7EB", // Gray-200
+                        "border-dark": "#374151", // Gray-700
+                        "text-main-light": "#111827",
+                        "text-main-dark": "#F9FAFB",
+                        "text-secondary-light": "#6B7280",
+                        "text-secondary-dark": "#9CA3AF",
+                        "highlight-light": "#EFF6FF",
+                        "highlight-dark": "#1E3A8A",
+                        "danger": "#EF4444",
+                        "danger-hover": "#DC2626",
+                        "danger-light": "#FEF2F2",
+                        "danger-dark": "#7F1D1D",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.375rem",
+                    },
+                },
+            },
+        };
+    </script>
+<style>::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #CBD5E1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background-color: #4B5563;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main-light dark:text-text-main-dark h-screen overflow-hidden flex flex-col relative">
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" id="clear-session-modal">
+<div class="bg-surface-light dark:bg-surface-dark rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden border border-border-light dark:border-border-dark transform transition-all">
+<div class="p-6">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center shrink-0">
+<span class="material-icons-outlined text-danger text-2xl">warning</span>
+</div>
+<div>
+<h3 class="text-lg font-semibold text-text-main-light dark:text-text-main-dark">Clear Session?</h3>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark mt-1">
+                        Are you sure you want to clear your session? All uploaded files and unsaved changes will be lost.
+                    </p>
+</div>
+</div>
+<div class="mt-6 flex items-center justify-end gap-3">
+<button class="px-4 py-2 text-sm font-medium text-text-main-light dark:text-text-main-dark bg-white dark:bg-gray-700 border border-border-light dark:border-border-dark rounded hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200">
+                    Cancel
+                </button>
+<button class="px-4 py-2 text-sm font-medium text-white bg-danger hover:bg-danger-hover rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    Clear Everything
+                </button>
+</div>
+</div>
+</div>
+</div>
+<header class="h-16 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark flex items-center justify-between px-4 shrink-0 z-20">
+<div class="flex items-center space-x-4">
+<div class="flex items-center gap-2 mr-6">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center text-white">
+<span class="material-icons-outlined text-xl">description</span>
+</div>
+<span class="text-lg font-semibold tracking-tight">PDF Editor</span>
+</div>
+<div class="hidden md:flex items-center text-sm text-text-secondary-light dark:text-text-secondary-dark">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+<span class="mx-2 text-xs">/</span>
+<span class="font-medium text-text-main-light dark:text-text-main-dark">Core PDF Editing Workspace</span>
+</div>
+</div>
+<div class="flex items-center space-x-3">
+<div class="relative group">
+<button class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-text-main-light dark:text-text-main-dark bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors border border-transparent">
+<span class="material-icons-outlined text-lg">grid_view</span>
+                    Switch Tool
+                    <span class="material-icons-outlined text-lg">expand_more</span>
+</button>
+<div class="absolute right-0 top-full mt-1 w-48 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded shadow-lg hidden group-hover:block z-50">
+<div class="py-1">
+<a class="flex items-center px-4 py-2 text-sm text-text-main-light dark:text-text-main-dark hover:bg-gray-100 dark:hover:bg-gray-700" href="#">
+<span class="material-icons-outlined text-gray-400 mr-2 text-lg">call_merge</span> Merge
+                        </a>
+<a class="flex items-center px-4 py-2 text-sm text-text-main-light dark:text-text-main-dark hover:bg-gray-100 dark:hover:bg-gray-700" href="#">
+<span class="material-icons-outlined text-gray-400 mr-2 text-lg">compress</span> Compress
+                        </a>
+<a class="flex items-center px-4 py-2 text-sm text-text-main-light dark:text-text-main-dark hover:bg-gray-100 dark:hover:bg-gray-700" href="#">
+<span class="material-icons-outlined text-gray-400 mr-2 text-lg">content_cut</span> Split
+                        </a>
+</div>
+</div>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-hover rounded shadow-sm transition-colors">
+<span class="material-icons-outlined text-lg">add</span>
+                Add PDF
+            </button>
+<button class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-danger dark:text-red-400 bg-danger-light/50 dark:bg-red-900/20 border border-danger/20 dark:border-red-500/30 hover:bg-danger-light dark:hover:bg-red-900/40 rounded transition-colors" onclick="document.getElementById('clear-session-modal').classList.remove('hidden')">
+<span class="material-icons-outlined text-lg">delete_sweep</span>
+                Clear Session
+            </button>
+<button class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-text-main-light dark:text-text-main-dark bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors">
+<span class="material-icons-outlined text-lg">download</span>
+                Download PDF
+            </button>
+<button class="p-2 text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full">
+<span class="material-icons-outlined">help_outline</span>
+</button>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<nav class="w-64 bg-surface-light dark:bg-surface-dark border-r border-border-light dark:border-border-dark flex flex-col overflow-y-auto shrink-0 custom-scrollbar">
+<div class="py-6 px-4">
+<div class="mb-6">
+<h3 class="px-2 text-xs font-semibold text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider mb-2">Main</h3>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" href="#">
+<span class="material-icons-outlined text-xl group-hover:text-primary">dashboard</span>
+                                Dashboard
+                            </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" href="#">
+<span class="material-icons-outlined text-xl group-hover:text-primary">upload_file</span>
+                                Add PDF
+                            </a>
+</li>
+</ul>
+</div>
+<div class="mb-6">
+<h3 class="px-2 text-xs font-semibold text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider mb-2">Page Tools</h3>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" href="#">
+<span class="material-icons-outlined text-xl group-hover:text-primary">rotate_right</span>
+                                Rotate Pages
+                            </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" href="#">
+<span class="material-icons-outlined text-xl group-hover:text-primary">delete_outline</span>
+                                Delete Pages
+                            </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" href="#">
+<span class="material-icons-outlined text-xl group-hover:text-primary">swap_vert</span>
+                                Reorder Pages
+                            </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" href="#">
+<span class="material-icons-outlined text-xl group-hover:text-primary">file_copy</span>
+                                Extract Pages
+                            </a>
+</li>
+</ul>
+</div>
+<div class="mb-6">
+<h3 class="px-2 text-xs font-semibold text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider mb-2">Content Tools</h3>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" href="#">
+<span class="material-icons-outlined text-xl group-hover:text-primary">copyright</span>
+                                Add Watermark
+                            </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" href="#">
+<span class="material-icons-outlined text-xl group-hover:text-primary">draw</span>
+                                Sign PDF
+                            </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-main-light dark:text-text-main-dark bg-highlight-light dark:bg-highlight-dark text-primary rounded-md group" href="#">
+<span class="material-icons-outlined text-xl text-primary">edit</span>
+                                Annotate
+                            </a>
+</li>
+</ul>
+</div>
+<div class="mb-6">
+<h3 class="px-2 text-xs font-semibold text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider mb-2">Operations</h3>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" href="#">
+<span class="material-icons-outlined text-xl group-hover:text-primary">call_merge</span>
+                                Merge PDFs
+                            </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" href="#">
+<span class="material-icons-outlined text-xl group-hover:text-primary">content_cut</span>
+                                Split PDF
+                            </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" href="#">
+<span class="material-icons-outlined text-xl group-hover:text-primary">compress</span>
+                                Compress
+                            </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" href="#">
+<span class="material-icons-outlined text-xl group-hover:text-primary">lock_outline</span>
+                                Protect
+                            </a>
+</li>
+</ul>
+</div>
+</div>
+<div class="mt-auto p-4 border-t border-border-light dark:border-border-dark">
+<button class="w-full flex items-center justify-center p-2 text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+<span class="material-icons-outlined">menu_open</span>
+</button>
+</div>
+</nav>
+<main class="flex-1 flex flex-col min-w-0 bg-gray-100 dark:bg-gray-900 relative">
+<div class="h-14 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark flex items-center justify-center px-4 space-x-2 shrink-0 shadow-sm z-10">
+<button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-primary bg-highlight-light dark:bg-highlight-dark rounded hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors">
+<span class="material-icons-outlined text-base">refresh</span> Rotate
+                </button>
+<div class="w-px h-6 bg-border-light dark:bg-border-dark mx-2"></div>
+<button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-text-main-light dark:text-text-main-dark hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors">
+<span class="material-icons-outlined text-base text-gray-500">edit</span> Annotate
+                </button>
+<button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-text-main-light dark:text-text-main-dark hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors">
+<span class="material-icons-outlined text-base text-gray-500">draw</span> Sign
+                </button>
+<button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-text-main-light dark:text-text-main-dark hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors">
+<span class="material-icons-outlined text-base text-gray-500">text_fields</span> Edit
+                </button>
+</div>
+<div class="flex flex-1 overflow-hidden relative">
+<div class="w-64 bg-surface-light dark:bg-surface-dark border-r border-border-light dark:border-border-dark flex flex-col overflow-y-auto shrink-0 z-10">
+<div class="p-3 flex justify-between items-center border-b border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark sticky top-0 z-10">
+<span class="text-sm font-semibold">Page Thumbnails</span>
+<button class="text-text-secondary-light dark:text-text-secondary-dark hover:text-primary">
+<span class="material-icons-outlined text-lg">chevron_left</span>
+</button>
+</div>
+<div class="p-4 space-y-6">
+<div class="flex gap-2 group">
+<div class="mt-8 text-text-secondary-light dark:text-text-secondary-dark cursor-grab opacity-0 group-hover:opacity-100">
+<span class="material-icons-outlined text-lg">drag_indicator</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="relative w-full aspect-[3/4] bg-white border-2 border-primary shadow-sm rounded overflow-hidden group-thumb cursor-pointer">
+<div class="absolute inset-0 bg-blue-50/10 pointer-events-none"></div>
+<div class="h-full w-full flex">
+<div class="w-1/3 h-full bg-slate-700"></div>
+<div class="w-2/3 h-full bg-white p-2">
+<div class="h-1 w-1/2 bg-gray-300 mb-2"></div>
+<div class="h-1 w-full bg-gray-200 mb-1"></div>
+<div class="h-1 w-full bg-gray-200 mb-1"></div>
+<div class="h-1 w-3/4 bg-gray-200 mb-1"></div>
+</div>
+</div>
+<div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1 bg-white/90 dark:bg-gray-800/90 rounded text-red-500 shadow-sm hover:bg-red-50">
+<span class="material-icons-outlined text-sm">delete</span>
+</button>
+</div>
+</div>
+<span class="mt-2 text-xs font-medium text-primary">1</span>
+</div>
+</div>
+<div class="flex gap-2 group">
+<div class="mt-8 text-text-secondary-light dark:text-text-secondary-dark cursor-grab opacity-0 group-hover:opacity-100">
+<span class="material-icons-outlined text-lg">drag_indicator</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="relative w-full aspect-[3/4] bg-white border border-border-light dark:border-border-dark shadow-sm rounded overflow-hidden group-thumb cursor-pointer hover:border-primary transition-colors">
+<div class="h-full w-full p-3 bg-white">
+<div class="h-2 w-1/3 bg-gray-800 mb-3"></div>
+<div class="space-y-1">
+<div class="h-1 w-full bg-gray-200"></div>
+<div class="h-1 w-full bg-gray-200"></div>
+<div class="h-1 w-4/5 bg-gray-200"></div>
+</div>
+<div class="mt-4 space-y-1">
+<div class="h-1 w-full bg-gray-200"></div>
+<div class="h-1 w-full bg-gray-200"></div>
+<div class="h-1 w-full bg-gray-200"></div>
+</div>
+</div>
+<div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1 bg-white/90 dark:bg-gray-800/90 rounded text-red-500 shadow-sm hover:bg-red-50">
+<span class="material-icons-outlined text-sm">delete</span>
+</button>
+</div>
+</div>
+<span class="mt-2 text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark">2</span>
+</div>
+</div>
+<div class="flex gap-2 group">
+<div class="mt-8 text-text-secondary-light dark:text-text-secondary-dark cursor-grab opacity-0 group-hover:opacity-100">
+<span class="material-icons-outlined text-lg">drag_indicator</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="relative w-full aspect-[3/4] bg-white border border-border-light dark:border-border-dark shadow-sm rounded overflow-hidden group-thumb cursor-pointer hover:border-primary transition-colors">
+<div class="h-full w-full flex">
+<div class="w-1/3 h-full bg-slate-700"></div>
+<div class="w-2/3 h-full bg-white p-2">
+<div class="h-1 w-1/2 bg-gray-300 mb-2"></div>
+<div class="space-y-1">
+<div class="h-1 w-full bg-gray-200"></div>
+<div class="h-1 w-full bg-gray-200"></div>
+</div>
+</div>
+</div>
+<div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1 bg-white/90 dark:bg-gray-800/90 rounded text-red-500 shadow-sm hover:bg-red-50">
+<span class="material-icons-outlined text-sm">delete</span>
+</button>
+</div>
+</div>
+<span class="mt-2 text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark">3</span>
+</div>
+</div>
+<div class="flex gap-2 group">
+<div class="mt-8 text-text-secondary-light dark:text-text-secondary-dark cursor-grab opacity-0 group-hover:opacity-100">
+<span class="material-icons-outlined text-lg">drag_indicator</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="relative w-full aspect-[3/4] bg-white border border-border-light dark:border-border-dark shadow-sm rounded overflow-hidden group-thumb cursor-pointer hover:border-primary transition-colors">
+<div class="h-full w-full p-3 bg-white">
+<div class="h-1 w-full bg-gray-200 mb-2"></div>
+<div class="h-1 w-full bg-gray-200 mb-2"></div>
+<div class="h-1 w-full bg-gray-200 mb-2"></div>
+<div class="h-20 w-full bg-gray-100 rounded mt-2"></div>
+</div>
+<div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1 bg-white/90 dark:bg-gray-800/90 rounded text-red-500 shadow-sm hover:bg-red-50">
+<span class="material-icons-outlined text-sm">delete</span>
+</button>
+</div>
+</div>
+<span class="mt-2 text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark">4</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-auto flex justify-center p-8 bg-gray-100 dark:bg-gray-900 custom-scrollbar">
+<div class="w-[800px] min-h-[1100px] bg-white shadow-lg relative rounded-sm flex">
+<div class="w-1/3 h-full relative overflow-hidden">
+<img alt="Abstract architectural building detail" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyGj8O_l1_hEPP6Re0QXGRywaL-GC7go4YkKN8b1Fq6gyT0JGAq_g4m01Khs5vNVLAiKYNH7SjKxRSdq4Fkn2WkrIwJjWZZ35_ieMELNSg1rvEVZqfJmq0trqZDNYOBuGskQyYw1gF19FKfKQEFzslsPu3xnMV4x9ASEPoMxUAkj4ecVkHp1nb7luHc1oA1bkX_mv-9GbH0ZjSfumeGu7MVlfi03TdOi9uk7spMAvxKbFQ72zGvSkDe5STr2eVF7GIwdKaalxwqOk"/>
+</div>
+<div class="w-2/3 h-full p-16 text-gray-800">
+<h1 class="text-4xl font-bold mb-8 text-black leading-tight">Header Writer free documents</h1>
+<div class="space-y-6 text-sm text-justify leading-relaxed text-gray-600">
+<p>
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.
+                                </p>
+<p>
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco exi ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.
+                                </p>
+<p>
+                                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                                </p>
+<p>
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.
+                                </p>
+<p>
+                                    Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+                                </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+        // Simple logic to check system preference or toggle
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</body></html>

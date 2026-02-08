@@ -1,0 +1,147 @@
+<div class="bg-background-light dark:bg-background-dark font-display text-text-main-light dark:text-text-main-dark h-screen overflow-hidden flex flex-col">
+  <header class="h-16 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark flex items-center justify-between px-4 shrink-0 z-20">
+    <div class="flex items-center space-x-4">
+      <div class="flex items-center gap-2 mr-6">
+        <div class="w-8 h-8 bg-primary rounded flex items-center justify-center text-white">
+          <span class="material-icons-outlined text-xl">description</span>
+        </div>
+        <span class="text-lg font-semibold tracking-tight">PDF Editor</span>
+      </div>
+      <div class="hidden md:flex items-center text-sm text-text-secondary-light dark:text-text-secondary-dark">
+        <a class="hover:text-primary transition-colors" routerLink="/stitch">Home</a>
+        <span class="mx-2 text-xs">/</span>
+        <span class="font-medium text-text-main-light dark:text-text-main-dark">Core PDF Editing Workspace</span>
+      </div>
+    </div>
+    <div class="flex items-center space-x-3">
+      <button class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-hover rounded shadow-sm transition-colors" routerLink="/stitch/bulk">
+        <span class="material-icons-outlined text-lg">add</span>
+        Add PDF
+      </button>
+      <button class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-text-main-light dark:text-text-main-dark bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors">
+        <span class="material-icons-outlined text-lg">download</span>
+        Download
+      </button>
+    </div>
+  </header>
+  <div class="flex flex-1 overflow-hidden min-h-0">
+    <nav class="w-64 bg-surface-light dark:bg-surface-dark border-r border-border-light dark:border-border-dark flex flex-col overflow-y-auto shrink-0 custom-scrollbar">
+      <div class="py-6 px-4">
+        <div class="mb-6">
+          <h3 class="px-2 text-xs font-semibold text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider mb-2">Main</h3>
+          <ul class="space-y-1">
+            <li>
+              <a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" routerLink="/stitch">
+                <span class="material-icons-outlined text-xl group-hover:text-primary">dashboard</span>
+                Dashboard
+              </a>
+            </li>
+            <li>
+              <a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" routerLink="/stitch/bulk">
+                <span class="material-icons-outlined text-xl group-hover:text-primary">upload_file</span>
+                Add PDF
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="mb-6">
+          <h3 class="px-2 text-xs font-semibold text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider mb-2">Page Tools</h3>
+          <ul class="space-y-1">
+            <li>
+              <a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" routerLink="/tools/rotate">
+                <span class="material-icons-outlined text-xl group-hover:text-primary">rotate_right</span>
+                Rotate Pages
+              </a>
+            </li>
+            <li>
+              <a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" routerLink="/tools/delete">
+                <span class="material-icons-outlined text-xl group-hover:text-primary">delete_outline</span>
+                Delete Pages
+              </a>
+            </li>
+            <li>
+              <a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" routerLink="/tools/reorder">
+                <span class="material-icons-outlined text-xl group-hover:text-primary">swap_vert</span>
+                Reorder Pages
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="mb-6">
+          <h3 class="px-2 text-xs font-semibold text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider mb-2">Operations</h3>
+          <ul class="space-y-1">
+            <li>
+              <a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" routerLink="/tools/merge">
+                <span class="material-icons-outlined text-xl group-hover:text-primary">call_merge</span>
+                Merge PDFs
+              </a>
+            </li>
+            <li>
+              <a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" routerLink="/tools/split">
+                <span class="material-icons-outlined text-xl group-hover:text-primary">content_cut</span>
+                Split PDF
+              </a>
+            </li>
+            <li>
+              <a class="flex items-center gap-3 px-2 py-2 text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary hover:bg-highlight-light dark:hover:bg-highlight-dark rounded-md group" routerLink="/tools/compress">
+                <span class="material-icons-outlined text-xl group-hover:text-primary">compress</span>
+                Compress
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <main class="flex-1 flex flex-col min-w-0 bg-gray-100 dark:bg-gray-900 relative min-h-0">
+      <div class="h-14 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark flex items-center justify-center px-4 space-x-2 shrink-0 shadow-sm z-10">
+        <button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-primary bg-highlight-light dark:bg-highlight-dark rounded hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors">
+          <span class="material-icons-outlined text-base">refresh</span> Rotate
+        </button>
+        <div class="w-px h-6 bg-border-light dark:bg-border-dark mx-2"></div>
+        <button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-text-main-light dark:text-text-main-dark hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors">
+          <span class="material-icons-outlined text-base text-gray-500">edit</span> Annotate
+        </button>
+        <button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-text-main-light dark:text-text-main-dark hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors">
+          <span class="material-icons-outlined text-base text-gray-500">draw</span> Sign
+        </button>
+      </div>
+      <div class="flex flex-1 overflow-hidden min-h-0">
+        <div class="w-64 bg-surface-light dark:bg-surface-dark border-r border-border-light dark:border-border-dark flex flex-col overflow-y-auto shrink-0 z-10 custom-scrollbar">
+          <div class="p-3 flex justify-between items-center border-b border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark sticky top-0 z-10">
+            <span class="text-sm font-semibold">Page Thumbnails</span>
+          </div>
+          <div class="p-4 space-y-6">
+            <div *ngIf="(selectedFile$ | async) === null" class="text-center text-sm text-text-secondary-light">
+              No file selected
+            </div>
+          </div>
+        </div>
+        <div class="flex-1 min-h-0 overflow-hidden bg-gray-100 dark:bg-gray-900">
+          <div class="h-full w-full overflow-auto flex justify-center custom-scrollbar">
+            <ng-container *ngIf="selectedFile$ | async as file; else noFile">
+              <ngx-extended-pdf-viewer
+                [src]="file.data"
+                [useBrowserLocale]="true"
+                [height]="'100%'"
+                [showToolbar]="true"
+                [zoom]="'page-fit'"
+                [textLayer]="true"
+                [showHandToolButton]="true">
+              </ngx-extended-pdf-viewer>
+            </ng-container>
+            <ng-template #noFile>
+              <div class="flex flex-col items-center justify-center h-full text-text-secondary-light dark:text-text-secondary-dark">
+                <span class="material-icons-outlined text-6xl mb-4">description</span>
+                <p class="text-xl font-medium">No PDF Selected</p>
+                <p class="mt-2">Select a file from the Bulk Uploads list to edit.</p>
+                <button class="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover" routerLink="/stitch/bulk">
+                  Go to Bulk Uploads
+                </button>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

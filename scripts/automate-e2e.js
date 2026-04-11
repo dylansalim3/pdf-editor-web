@@ -20,13 +20,18 @@ function run(cmd, args, opts) {
 
 function parseArgs() {
   const a = process.argv.slice(2);
-  return { dryRun: a.includes('--dry-run') || process.env.DRY_RUN === '1' };
+  // support --dry-run and --out <path> to control output file
+  const dryRun = a.includes('--dry-run') || process.env.DRY_RUN === '1';
+  const outIndex = a.indexOf('--out');
+  const out = outIndex !== -1 && a.length > outIndex + 1 ? a[outIndex + 1] : process.env.OUT_FILE;
+  return { dryRun, out };
 }
 
 const argv = parseArgs();
 const outDir = path.join(process.cwd(), 'docs', 'changes');
 if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-const outFile = path.join(outDir, 'iteration-012.md');
+const defaultOut = path.join(outDir, 'iteration-012.md');
+const outFile = argv.out ? path.isAbsolute(argv.out) ? argv.out : path.join(process.cwd(), argv.out) : defaultOut;
 
 const log = [];
 log.push(`# Automated e2e Agent Run - iteration-012`);

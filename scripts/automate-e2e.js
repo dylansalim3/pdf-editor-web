@@ -178,6 +178,45 @@ for (let i = 0; i < steps.length; i++) {
     log.push('');
   }
 
+  // Include additional diagnostics (signal, error, raw output) when
+  // available — this helps triage spawnSync failures that don't surface
+  // clearly in stdout/stderr (e.g. permission errors, ENOENT, signals).
+  if (res.signal) {
+    log.push('Signal:');
+    log.push('');
+    log.push('```');
+    log.push(String(res.signal));
+    log.push('```');
+    log.push('');
+  }
+  if (res.error) {
+    log.push('Error:');
+    log.push('');
+    log.push('```');
+    // Print stack if available, otherwise the error string
+    try {
+      log.push(res.error && res.error.stack ? res.error.stack : String(res.error));
+    } catch (e) {
+      log.push(String(res.error));
+    }
+    log.push('```');
+    log.push('');
+  }
+  if (res.output) {
+    log.push('Raw Output:');
+    log.push('');
+    log.push('```');
+    try {
+      // output is typically an array of [stdin, stdout, stderr]; stringify
+      // to preserve structure but fall back to toString when needed.
+      log.push(typeof res.output === 'string' ? res.output : JSON.stringify(res.output));
+    } catch (e) {
+      log.push(String(res.output));
+    }
+    log.push('```');
+    log.push('');
+  }
+
   if (res.status !== 0) {
     previousFailed = true;
     log.push(`_Step failed with exit code ${res.status}_`);

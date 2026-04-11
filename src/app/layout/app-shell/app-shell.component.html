@@ -93,7 +93,7 @@
       </div>
 
       <!-- Main Content -->
-      <main class="flex-1 overflow-auto p-6 transition-colors duration-300" [ngClass]="darkMode ? 'bg-gray-900' : 'bg-secondary-50'">
+      <main class="flex-1 overflow-auto transition-colors duration-300" [ngClass]="darkMode ? 'bg-gray-900' : 'bg-secondary-50'" [class.p-6]="!isFullBleedPage">
         <router-outlet></router-outlet>
       </main>
     </div>

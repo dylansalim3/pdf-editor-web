@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
+import * as pdfjsLib from 'pdfjs-dist';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 interface TextExtractionOptions {
   extractionMode: 'all' | 'pages' | 'range';
@@ -43,14 +46,7 @@ export class PdfToTextComponent {
     { value: 'spa', label: 'Spanish' },
     { value: 'fra', label: 'French' },
     { value: 'deu', label: 'German' },
-    { value: 'ita', label: 'Italian' },
-    { value: 'por', label: 'Portuguese' },
-    { value: 'rus', label: 'Russian' },
-    { value: 'chi_sim', label: 'Chinese (Simplified)' },
-    { value: 'chi_tra', label: 'Chinese (Traditional)' },
-    { value: 'jpn', label: 'Japanese' },
-    { value: 'kor', label: 'Korean' },
-    { value: 'ara', label: 'Arabic' },
+    { value: 'ita', label: 'Italian' }
   ];
 
   get pageRangeValid(): boolean {
@@ -70,52 +66,89 @@ export class PdfToTextComponent {
     }
     
     this.fileList = [file];
-    // Simulate getting page count
-    this.totalPages = Math.floor(Math.random() * 50) + 5;
-    this.options.endPage = this.totalPages;
+    
+    const originFile = (file as any).originFileObj || file;
+    const reader = new FileReader();
+    reader.onload = async (e: any) => {
+      try {
+        const arrayBuffer = e.target.result;
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        this.totalPages = pdf.numPages;
+        this.options.endPage = this.totalPages;
+      } catch (err) {
+        console.error('Error loading PDF:', err);
+      }
+    };
+    reader.readAsArrayBuffer(originFile as Blob);
+    
     return false;
   };
 
-  onExtract(): void {
+  async onExtract(): Promise<void> {
     if (this.fileList.length === 0) return;
     
     this.extracting = true;
     this.extractionProgress = 0;
+    this.extractedText = '';
     
-    // Simulate extraction progress
-    const interval = setInterval(() => {
-      this.extractionProgress += 10;
-      if (this.extractionProgress >= 100) {
-        clearInterval(interval);
-        this.extracting = false;
-        this.extracted = true;
-        this.extractedText = this.generateSampleExtractedText();
+    try {
+      const file = this.fileList[0] as any;
+      const originFile = file.originFileObj || file;
+      
+      let arrayBuffer: ArrayBuffer;
+      if (originFile.arrayBuffer) {
+        arrayBuffer = await originFile.arrayBuffer();
+      } else {
+        arrayBuffer = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = e => resolve(e.target?.result as ArrayBuffer);
+          reader.onerror = e => reject(e);
+          reader.readAsArrayBuffer(originFile);
+        });
       }
-    }, 150);
-  }
 
-  private generateSampleExtractedText(): string {
-    let text = '';
-    const startPage = this.options.extractionMode === 'all' ? 1 : 
-                      this.options.extractionMode === 'range' ? this.options.startPage : 1;
-    const endPage = this.options.extractionMode === 'all' ? this.totalPages : 
-                    this.options.extractionMode === 'range' ? this.options.endPage : this.totalPages;
-    
-    for (let page = startPage; page <= endPage; page++) {
-      if (this.options.includePageNumbers) {
-        text += `--- Page ${page} ---\n\n`;
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const total = pdf.numPages;
+      let text = '';
+      
+      const startPage = this.options.extractionMode === 'all' ? 1 : 
+                        this.options.extractionMode === 'range' ? this.options.startPage : 1;
+      const endPage = this.options.extractionMode === 'all' ? total : 
+                      this.options.extractionMode === 'range' ? this.options.endPage : total;
+                      
+      for (let pageNum = startPage; pageNum <= endPage; pageNum++) {
+        if (this.options.includePageNumbers) {
+          text += `\n--- Page ${pageNum} ---\n\n`;
+        }
+        
+        const page = await pdf.getPage(pageNum);
+        const textContent = await page.getTextContent();
+        
+        let lastY;
+        let textForPage = '';
+        for (let item of textContent.items) {
+            const anyItem = item as any;
+            if (lastY == anyItem.transform[5] || !lastY){
+                textForPage += anyItem.str;
+            } else {
+                textForPage += '\n' + anyItem.str;
+            }
+            lastY = anyItem.transform[5];
+        }
+        
+        text += textForPage + '\n';
+        this.extractionProgress = Math.round(((pageNum - startPage + 1) / (endPage - startPage + 1)) * 100);
       }
       
-      text += `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\n`;
-      
-      text += `Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n`;
-      
-      if (page < endPage && this.options.preserveLineBreaks) {
-        text += '\n';
-      }
+      this.extractedText = text.trim();
+      this.extracted = true;
+    } catch(err) {
+      console.error(err);
+      alert('Failed to extract text');
+    } finally {
+      this.extracting = false;
+      this.extractionProgress = 100;
     }
-    
-    return text.trim();
   }
 
   onDownload(): void {

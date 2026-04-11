@@ -1,0 +1,20 @@
+<div class="max-w-7xl mx-auto py-10 px-4">
+  <div class="page-header mb-8">
+    <h1 class="text-3xl font-bold text-secondary-900 mb-2">Compare PDFs</h1>
+    <p class="text-secondary-500">View two PDF documents side-by-side to manually find differences.</p>
+  </div>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 h-[800px]">
+    <div class="card p-6 flex flex-col">
+      <h3 class="font-semibold mb-4 text-lg">PDF #1</h3>
+      <input type="file" accept=".pdf" (change)="onPdf1($event)" class="w-full text-sm mb-4" />
+      <iframe [src]="pdf1Url" class="w-full flex-1 border rounded" *ngIf="pdf1Url"></iframe>
+    </div>
+    
+    <div class="card p-6 flex flex-col">
+      <h3 class="font-semibold mb-4 text-lg">PDF #2</h3>
+      <input type="file" accept=".pdf" (change)="onPdf2($event)" class="w-full text-sm mb-4" />
+      <iframe [src]="pdf2Url" class="w-full flex-1 border rounded" *ngIf="pdf2Url"></iframe>
+    </div>
+  </div>
+</div>

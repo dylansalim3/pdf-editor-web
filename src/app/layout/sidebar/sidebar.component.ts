@@ -26,6 +26,8 @@ export class SidebarComponent {
       title: 'Main',
       items: [
         { label: 'Dashboard', icon: 'dashboard', route: '/' },
+        { label: 'Bulk Uploads', icon: 'cloud-upload', route: '/stitch/bulk' },
+        { label: 'Smart Workspace', icon: 'layout', route: '/stitch/editor' },
         { label: 'Upload PDF', icon: 'upload', route: '/upload' },
       ]
     },

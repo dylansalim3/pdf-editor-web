@@ -44,7 +44,10 @@ npm run build:prod
 
 ### Cloudflare Pages
 
-This project is configured for Cloudflare Pages deployment.
+This project is deployed to Cloudflare Pages.
+
+- **Project Name**: `pdf-editor-web`
+- **Production URL**: [https://pdf-editor-web.pages.dev](https://pdf-editor-web.pages.dev)
 
 #### Build Configuration
 - **Build command**: 
@@ -53,25 +56,13 @@ This project is configured for Cloudflare Pages deployment.
 - **Build output directory**: `dist`
 - **Node Version**: 16 (or lower for compatibility)
 
-**Note for Cloudflare Pages**: Since Cloudflare Pages uses Linux, the build command should use `export` instead of `set`.
+#### AI Agent Instructions
+Future AI agents can update this deployment by running the following commands:
+1. **Build**: `npm run build:prod`
+2. **Deploy**: `npx wrangler pages deploy dist --project-name pdf-editor-web`
 
-#### Deployment Steps
-
-1. **Connect to Cloudflare Pages**:
-   - Go to [Cloudflare Pages Dashboard](https://dash.cloudflare.com/pages)
-   - Click "Create a project"
-   - Connect your GitHub repository
-
-2. **Build Settings**:
-   - Framework preset: None (or Angular)
-   - Build command: `npm run build:cf`
-   - Build output directory: `dist`
-
-3. **Environment Variables** (if needed):
-   - `NODE_VERSION`: `16`
-
-4. **Deploy**:
-   - Cloudflare Pages will automatically deploy on every push to your main branch
+> [!NOTE]
+> The project name `pdf-editor-web` must be specified during deployment if it's not automatically detected from `wrangler.toml`.
 
 #### Important Files
 - `wrangler.toml` - Cloudflare Pages configuration
@@ -91,3 +82,4 @@ The `_redirects` file ensures that client-side routing works correctly on Cloudf
 
 ## License
 MIT
+

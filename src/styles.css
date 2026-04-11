@@ -92,7 +92,7 @@
   
   /* Tool Card Styles */
   .tool-card {
-    @apply card hover:shadow-md transition-shadow duration-200 cursor-pointer group;
+    @apply card hover:shadow-md transition-shadow duration-200 cursor-pointer;
   }
   
   .tool-card:hover {

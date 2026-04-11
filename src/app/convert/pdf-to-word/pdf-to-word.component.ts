@@ -1,5 +1,9 @@
 import { Component } from '@angular/core';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
+import * as pdfjsLib from 'pdfjs-dist';
+import { Document, Packer, Paragraph, TextRun } from 'docx';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 interface ConversionOptions {
   outputFormat: 'docx' | 'doc';
@@ -24,6 +28,7 @@ export class PdfToWordComponent {
   convertedFile: { name: string; size: number; pages: number } | null = null;
   extractedText: string = '';
   showPreview = false;
+  convertedBlobUrl: string = '';
   
   options: ConversionOptions = {
     outputFormat: 'docx',
@@ -40,14 +45,7 @@ export class PdfToWordComponent {
     { value: 'spa', label: 'Spanish' },
     { value: 'fra', label: 'French' },
     { value: 'deu', label: 'German' },
-    { value: 'ita', label: 'Italian' },
-    { value: 'por', label: 'Portuguese' },
-    { value: 'rus', label: 'Russian' },
-    { value: 'chi_sim', label: 'Chinese (Simplified)' },
-    { value: 'chi_tra', label: 'Chinese (Traditional)' },
-    { value: 'jpn', label: 'Japanese' },
-    { value: 'kor', label: 'Korean' },
-    { value: 'ara', label: 'Arabic' },
+    { value: 'ita', label: 'Italian' }
   ];
 
   beforeUpload = (file: NzUploadFile): boolean => {
@@ -61,46 +59,100 @@ export class PdfToWordComponent {
     return false;
   };
 
-  onConvert(): void {
+  async onConvert(): Promise<void> {
     if (this.fileList.length === 0) return;
     
     this.converting = true;
     this.conversionProgress = 0;
     
-    // Simulate conversion progress
-    const interval = setInterval(() => {
-      this.conversionProgress += 5;
-      if (this.conversionProgress >= 100) {
-        clearInterval(interval);
-        this.converting = false;
-        this.converted = true;
-        this.convertedFile = {
-          name: this.fileList[0].name.replace(/\.pdf$/i, `.${this.options.outputFormat}`),
-          size: Math.floor(Math.random() * 1000000) + 200000,
-          pages: Math.floor(Math.random() * 20) + 5
-        };
-        
-        // Generate sample extracted text
-        this.extractedText = this.generateSampleText();
+    try {
+      const file = this.fileList[0] as any;
+      const originFile = file.originFileObj || file;
+      
+      let arrayBuffer: ArrayBuffer;
+      if (originFile.arrayBuffer) {
+        arrayBuffer = await originFile.arrayBuffer();
+      } else {
+        arrayBuffer = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = e => resolve(e.target?.result as ArrayBuffer);
+          reader.onerror = e => reject(e);
+          reader.readAsArrayBuffer(originFile);
+        });
       }
-    }, 200);
-  }
 
-  private generateSampleText(): string {
-    return `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      this.conversionProgress = 20;
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const total = pdf.numPages;
+      let fullText = '';
+      const paragraphs: Paragraph[] = [];
+      
+      for (let pageNum = 1; pageNum <= total; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        const textContent = await page.getTextContent();
+        
+        let lastY;
+        let textForPage = '';
+        for (const item of textContent.items) {
+          const anyItem = item as any;
+          if (lastY == anyItem.transform[5] || !lastY) {
+            textForPage += anyItem.str;
+          } else {
+            paragraphs.push(new Paragraph({
+              children: [new TextRun(textForPage)],
+            }));
+            fullText += textForPage + '\n';
+            textForPage = anyItem.str;
+          }
+          lastY = anyItem.transform[5];
+        }
+        
+        if (textForPage) {
+          paragraphs.push(new Paragraph({
+            children: [new TextRun(textForPage)],
+          }));
+          fullText += textForPage + '\n';
+        }
+        
+        this.conversionProgress = 20 + Math.round((pageNum / total) * 50);
+      }
+      
+      this.extractedText = fullText;
 
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+      const doc = new Document({
+        sections: [{
+          properties: {},
+          children: paragraphs,
+        }],
+      });
 
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+      const blob = await Packer.toBlob(doc);
+      this.convertedBlobUrl = window.URL.createObjectURL(blob);
+      
+      this.convertedFile = {
+        name: this.fileList[0].name.replace(/\.pdf$/i, `.${this.options.outputFormat}`),
+        size: blob.size,
+        pages: total
+      };
 
-Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`;
+      this.converted = true;
+      this.conversionProgress = 100;
+    } catch (err) {
+      console.error(err);
+      alert('Failed to convert PDF to Word');
+    } finally {
+      this.converting = false;
+    }
   }
 
   onDownload(): void {
+    if (!this.convertedBlobUrl) return;
     const link = document.createElement('a');
-    link.href = '#';
+    link.href = this.convertedBlobUrl;
     link.download = this.convertedFile?.name || 'converted.docx';
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   }
 
   onReset(): void {
@@ -110,6 +162,10 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
     this.conversionProgress = 0;
     this.extractedText = '';
     this.showPreview = false;
+    if (this.convertedBlobUrl) {
+      window.URL.revokeObjectURL(this.convertedBlobUrl);
+      this.convertedBlobUrl = '';
+    }
   }
 
   formatFileSize(bytes: number): string {
@@ -122,7 +178,6 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
 
   copyToClipboard(): void {
     navigator.clipboard.writeText(this.extractedText).then(() => {
-      // Show success toast (simplified)
       alert('Text copied to clipboard!');
     });
   }

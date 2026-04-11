@@ -34,7 +34,13 @@ function parseArgs() {
   const a = process.argv.slice(2);
   // support --dry-run and --out <path> to control output file
   const dryRun = a.includes('--dry-run') || process.env.DRY_RUN === '1';
-  const verifyInstall = a.includes('--verify-install') || process.env.VERIFY_INSTALL === '1';
+  // By default run the verify-install (npm ci --dry-run) as part of
+  // preflight to catch resolver issues early. Allow opting out via
+  // --no-verify-install or NO_VERIFY_INSTALL=1. This makes preflight
+  // more useful (learned during past iterations) while still allowing
+  // CI or callers to skip the install check when desired.
+  const noVerify = a.includes('--no-verify-install') || process.env.NO_VERIFY_INSTALL === '1';
+  const verifyInstall = noVerify ? false : (a.includes('--verify-install') || process.env.VERIFY_INSTALL === '1' || true);
   const outIndex = a.indexOf('--out');
   const out = outIndex !== -1 && a.length > outIndex + 1 ? a[outIndex + 1] : process.env.OUT_FILE;
   return { dryRun, out, verifyInstall };

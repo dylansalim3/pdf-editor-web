@@ -9,7 +9,7 @@
     "build:cf": "set NODE_OPTIONS=--openssl-legacy-provider && ng build --configuration production",
     "test": "set NODE_OPTIONS=--openssl-legacy-provider && ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "set NODE_OPTIONS=--openssl-legacy-provider && ng e2e"
   },
   "private": true,
   "dependencies": {

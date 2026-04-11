@@ -30,11 +30,14 @@ function parseArgs() {
 const argv = parseArgs();
 const outDir = path.join(process.cwd(), 'docs', 'changes');
 if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-const defaultOut = path.join(outDir, 'iteration-012.md');
+const defaultOut = path.join(outDir, 'iteration-014.md');
 const outFile = argv.out ? path.isAbsolute(argv.out) ? argv.out : path.join(process.cwd(), argv.out) : defaultOut;
 
+// Derive a human-friendly header from the output filename so the generated
+// docs header always matches the file name (fixes header/content mismatches).
+const outBase = path.basename(outFile, path.extname(outFile));
 const log = [];
-log.push(`# Automated e2e Agent Run - iteration-012`);
+log.push(`# Automated e2e Agent Run - ${outBase}`);
 log.push('');
 log.push(`timestamp: ${now()}`);
 log.push('');

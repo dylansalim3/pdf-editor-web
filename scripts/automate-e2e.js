@@ -6,12 +6,16 @@ const path = require('path');
 function now() { return new Date().toISOString(); }
 
 function run(cmd, args, opts) {
-  const full = `${cmd} ${args.join(' ')}`.trim();
+  // On Windows, npm and npx are .cmd shims (npm.cmd / npx.cmd). Use the
+  // .cmd variant when appropriate so spawnSync can find the executable.
+  const winShimCmds = new Set(['npm', 'npx']);
+  const execCmd = process.platform === 'win32' && winShimCmds.has(cmd) ? `${cmd}.cmd` : cmd;
+  const full = `${execCmd} ${args.join(' ')}`.trim();
   if (opts.dryRun) {
     return { status: 0, stdout: `[dry-run] would run: ${full}\n`, stderr: '' };
   }
   try {
-    const res = spawnSync(cmd, args, { encoding: 'utf8', shell: false });
+    const res = spawnSync(execCmd, args, { encoding: 'utf8', shell: false });
     return { status: res.status === null ? 1 : res.status, stdout: res.stdout || '', stderr: res.stderr || '' };
   } catch (e) {
     return { status: 1, stdout: '', stderr: String(e) };

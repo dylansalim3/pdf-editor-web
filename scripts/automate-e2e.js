@@ -178,6 +178,44 @@ for (let i = 0; i < steps.length; i++) {
     if (s.name === 'npm ci') {
       log.push('Action: Ensure the environment has network access and npm registry reachable, or run `npm ci` locally and re-run the agent.');
       log.push('');
+      // Detect an npm ERESOLVE / peer dependency resolution failure and
+      // attempt a single retry with the legacy peer deps flag. This is a
+      // pragmatic fallback for CI environments where peer conflicts are
+      // acceptable and prevents the agent from failing without guidance.
+      const stderrLower = (res.stderr || '').toLowerCase();
+      if (stderrLower.includes('eresolve') || stderrLower.includes('peer')) {
+        log.push('Detected a dependency resolution (ERESOLVE) during `npm ci`. Retrying once with `--legacy-peer-deps`...');
+        log.push('');
+        const retry = run('npm', ['ci', '--legacy-peer-deps'], { dryRun: argv.dryRun });
+        log.push('Retry Exit Code: ' + (retry.status == null ? 'null' : String(retry.status)));
+        log.push('');
+        if (retry.stdout && retry.stdout.trim()) {
+          log.push('Retry Stdout:');
+          log.push('');
+          log.push('```');
+          log.push(retry.stdout.trim());
+          log.push('```');
+          log.push('');
+        }
+        if (retry.stderr && retry.stderr.trim()) {
+          log.push('Retry Stderr:');
+          log.push('');
+          log.push('```');
+          log.push(retry.stderr.trim());
+          log.push('```');
+          log.push('');
+        }
+        if (retry.status === 0) {
+          // Consider the retry a success and allow subsequent steps to run.
+          previousFailed = false;
+          log.push('_Retry with --legacy-peer-deps succeeded; continuing with remaining steps._');
+          log.push('');
+        } else {
+          log.push('_Retry with --legacy-peer-deps also failed._');
+          log.push('Action: Consider running `npm ci --legacy-peer-deps` manually or reconciling peer dependency versions in package.json.');
+          log.push('');
+        }
+      }
     }
     if (s.name === 'e2e:prep') {
       log.push('Action: If update-chromedriver failed, consider re-running with `node scripts/update-chromedriver.js --no-update` to see the intended command or set CHROME_MAJOR to override detection.');

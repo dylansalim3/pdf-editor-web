@@ -36,9 +36,9 @@ const outDir = path.join(process.cwd(), 'docs', 'changes');
 if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 // Update the default output filename for this iteration so generated
 // artifacts match the current iteration number.
-// Update default output filename for this iteration so generated
-// artifacts match the current iteration number.
-const defaultOut = path.join(outDir, 'iteration-025.md');
+// NOTE: bump this each iteration to keep the generated artifact header
+// consistent with the file name. For iteration 26 we use iteration-026.md.
+const defaultOut = path.join(outDir, 'iteration-026.md');
 const outFile = argv.out ? path.isAbsolute(argv.out) ? argv.out : path.join(process.cwd(), argv.out) : defaultOut;
 
 // Derive a human-friendly header from the output filename so the generated

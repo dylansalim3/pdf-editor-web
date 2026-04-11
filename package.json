@@ -10,7 +10,8 @@
     "test": "set NODE_OPTIONS=--openssl-legacy-provider && ng test",
     "lint": "ng lint",
     "e2e": "set NODE_OPTIONS=--openssl-legacy-provider && ng e2e",
-    "e2e:prep": "node scripts/update-chromedriver.js"
+    "e2e:prep": "node scripts/update-chromedriver.js",
+    "e2e:run-agent": "node scripts/automate-e2e.js"
   },
   "private": true,
   "dependencies": {

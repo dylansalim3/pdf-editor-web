@@ -38,7 +38,7 @@ if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 // artifacts match the current iteration number.
 // Update default output filename for this iteration so generated
 // artifacts match the current iteration number.
-const defaultOut = path.join(outDir, 'iteration-023.md');
+const defaultOut = path.join(outDir, 'iteration-024.md');
 const outFile = argv.out ? path.isAbsolute(argv.out) ? argv.out : path.join(process.cwd(), argv.out) : defaultOut;
 
 // Derive a human-friendly header from the output filename so the generated

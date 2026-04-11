@@ -34,9 +34,10 @@ function parseArgs() {
   const a = process.argv.slice(2);
   // support --dry-run and --out <path> to control output file
   const dryRun = a.includes('--dry-run') || process.env.DRY_RUN === '1';
+  const verifyInstall = a.includes('--verify-install') || process.env.VERIFY_INSTALL === '1';
   const outIndex = a.indexOf('--out');
   const out = outIndex !== -1 && a.length > outIndex + 1 ? a[outIndex + 1] : process.env.OUT_FILE;
-  return { dryRun, out };
+  return { dryRun, out, verifyInstall };
 }
 
 const argv = parseArgs();
@@ -129,6 +130,13 @@ function checkDevDeps() {
     ok = false;
   }
 
+  // Check for lockfiles which influence deterministic installs and
+  // are useful to know when diagnosing npm ci failures.
+  const hasPackageLock = fs.existsSync(path.join(process.cwd(), 'package-lock.json'));
+  const hasYarnLock = fs.existsSync(path.join(process.cwd(), 'yarn.lock'));
+  if (hasPackageLock) msgs.push('Found package-lock.json (recommended for deterministic npm ci installs).');
+  if (hasYarnLock) msgs.push('Found yarn.lock (yarn lockfile present) -- npm ci may behave differently.');
+
   return { ok, msgs };
 }
 
@@ -153,6 +161,50 @@ if (preflight.ok) {
   // Prevent further steps from running when preflight fails; the agent should
   // install dependencies first and re-run to capture meaningful webdriver-manager output.
   previousFailed = true;
+}
+// Optionally verify a clean install (npm ci --dry-run) when requested by
+// the caller via --verify-install or VERIFY_INSTALL=1. This is intentionally
+// opt-in because it can trigger network operations; in dry-run mode it will
+// only log what would run.
+if (argv.verifyInstall) {
+  log.push('## Step 0.1: Optional verify-install (--verify-install)');
+  log.push('');
+  log.push('Command: npm ci --dry-run');
+  log.push('');
+  if (previousFailed) {
+    log.push('_Skipped because a previous step failed_');
+    log.push('');
+  } else {
+    const verifyRes = run('npm', ['ci', '--dry-run'], { dryRun: argv.dryRun });
+    log.push('Exit Code: ' + (verifyRes.status == null ? 'null' : String(verifyRes.status)));
+    log.push('');
+    if (verifyRes.stdout && verifyRes.stdout.trim()) {
+      log.push('Stdout:');
+      log.push('');
+      log.push('```');
+      log.push(verifyRes.stdout.trim());
+      log.push('```');
+      log.push('');
+    }
+    if (verifyRes.stderr && verifyRes.stderr.trim()) {
+      log.push('Stderr:');
+      log.push('');
+      log.push('```');
+      log.push(verifyRes.stderr.trim());
+      log.push('```');
+      log.push('');
+    }
+    if (verifyRes.status !== 0) {
+      previousFailed = true;
+      log.push('_Optional verify-install failed with exit code ' + String(verifyRes.status) + '_');
+      log.push('');
+      log.push('Action: Consider running `npm ci --dry-run` locally to inspect resolver errors, or run `npm ci --legacy-peer-deps` if peer-dependency resolution is expected to be relaxed in this environment.');
+      log.push('');
+    } else {
+      log.push('_Optional verify-install succeeded (no install changes would be performed)._');
+      log.push('');
+    }
+  }
 }
 for (let i = 0; i < steps.length; i++) {
   const s = steps[i];

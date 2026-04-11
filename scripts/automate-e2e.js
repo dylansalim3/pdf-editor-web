@@ -16,9 +16,17 @@ function run(cmd, args, opts) {
   }
   try {
     const res = spawnSync(execCmd, args, { encoding: 'utf8', shell: false });
-    return { status: res.status === null ? 1 : res.status, stdout: res.stdout || '', stderr: res.stderr || '' };
+    return {
+      status: res.status === null ? 1 : res.status,
+      stdout: res.stdout || '',
+      stderr: res.stderr || '',
+      signal: res.signal || null,
+      error: res.error || null,
+      // include the raw output array for extra diagnostics if needed
+      output: res.output || null,
+    };
   } catch (e) {
-    return { status: 1, stdout: '', stderr: String(e) };
+    return { status: 1, stdout: '', stderr: String(e), error: e };
   }
 }
 

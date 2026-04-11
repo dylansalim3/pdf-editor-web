@@ -43,7 +43,9 @@ function parseArgs() {
   const verifyInstall = noVerify ? false : (a.includes('--verify-install') || process.env.VERIFY_INSTALL === '1' || true);
   const outIndex = a.indexOf('--out');
   const out = outIndex !== -1 && a.length > outIndex + 1 ? a[outIndex + 1] : process.env.OUT_FILE;
-  return { dryRun, out, verifyInstall };
+  // Support --use-legacy-peer-deps and environment override USE_LEGACY_PEER_DEPS
+  const useLegacyPeerDeps = a.includes('--use-legacy-peer-deps') || process.env.USE_LEGACY_PEER_DEPS === '1';
+  return { dryRun, out, verifyInstall, useLegacyPeerDeps };
 }
 
 const argv = parseArgs();
@@ -87,6 +89,20 @@ const steps = [
   { name: 'e2e:prep', cmd: 'npm', args: ['run', 'e2e:prep'] },
   { name: 'e2e', cmd: 'npm', args: ['run', 'e2e'] },
 ];
+
+// If the caller requested using legacy-peer-deps for npm, apply it to the
+// initial npm ci invocation so environments that require relaxed peer
+// resolution can opt-in via CLI or env var. This fixes a prior property-name
+// mismatch where the flag was parsed but not applied.
+if (argv.useLegacyPeerDeps) {
+  // Find the npm ci step and append the flag
+  for (const s of steps) {
+    if (s.name === 'npm ci' && Array.isArray(s.args)) {
+      s.args = s.args.concat(['--legacy-peer-deps']);
+      break;
+    }
+  }
+}
 
 let previousFailed = false;
 // Check for expected devDependencies / local bin helpers before running

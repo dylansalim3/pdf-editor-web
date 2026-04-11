@@ -74,6 +74,69 @@ const steps = [
 ];
 
 let previousFailed = false;
+// Check for expected devDependencies / local bin helpers before running
+// network- or tool-dependent steps. This gives clearer guidance when the
+// environment lacks protractor/webdriver-manager or when devDependencies
+// have not been installed (common in CI/workspace runs).
+function checkDevDeps() {
+  const msgs = [];
+  let ok = true;
+  try {
+    const pkgPath = path.join(process.cwd(), 'package.json');
+    if (fs.existsSync(pkgPath)) {
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+      const dev = pkg.devDependencies || {};
+      if (!dev.protractor && !dev['webdriver-manager']) {
+        msgs.push('package.json does not list protractor or webdriver-manager in devDependencies.');
+        ok = false;
+      }
+    } else {
+      msgs.push('package.json not found in workspace root.');
+      ok = false;
+    }
+  } catch (e) {
+    msgs.push('Failed to read/parse package.json: ' + String(e));
+    ok = false;
+  }
+
+  // Check node_modules/.bin for expected binaries
+  const binDir = path.join(process.cwd(), 'node_modules', '.bin');
+  const protractorBin = process.platform === 'win32' ? 'protractor.cmd' : 'protractor';
+  const webdriverBin = process.platform === 'win32' ? 'webdriver-manager.cmd' : 'webdriver-manager';
+  if (!fs.existsSync(path.join(binDir, protractorBin))) {
+    msgs.push(`Local protractor binary not found at ${path.join('node_modules', '.bin', protractorBin)}.`);
+    ok = false;
+  }
+  if (!fs.existsSync(path.join(binDir, webdriverBin))) {
+    msgs.push(`Local webdriver-manager binary not found at ${path.join('node_modules', '.bin', webdriverBin)}.`);
+    ok = false;
+  }
+
+  return { ok, msgs };
+}
+
+// Emit a pre-flight check as Step 0 so it's recorded in the generated log
+const preflight = checkDevDeps();
+log.push('## Step 0: Preflight devDependencies check');
+log.push('');
+log.push('This check verifies package.json and local node_modules binaries required for e2e runs.');
+log.push('');
+if (preflight.ok) {
+  log.push('_Preflight check passed: devDependencies and local binaries appear present._');
+  log.push('');
+} else {
+  log.push('_Preflight check failed: missing devDependencies or local binaries._');
+  log.push('');
+  for (const m of preflight.msgs) {
+    log.push('- ' + m);
+  }
+  log.push('');
+  log.push('Action: Run `npm ci` (or `npm i -D protractor webdriver-manager`) in the project root to install devDependencies, then re-run the agent.');
+  log.push('');
+  // Prevent further steps from running when preflight fails; the agent should
+  // install dependencies first and re-run to capture meaningful webdriver-manager output.
+  previousFailed = true;
+}
 for (let i = 0; i < steps.length; i++) {
   const s = steps[i];
   log.push(`## Step ${i+1}: ${s.name}`);

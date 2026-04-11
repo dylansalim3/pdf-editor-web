@@ -34,12 +34,27 @@ function parseArgs() {
 const argv = parseArgs();
 const outDir = path.join(process.cwd(), 'docs', 'changes');
 if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-// Update the default output filename for this iteration so generated
-// artifacts match the current iteration number.
-// NOTE: bump this each iteration to keep the generated artifact header
-// consistent with the file name. For iteration 33 we use iteration-033.md.
-const defaultOut = path.join(outDir, 'iteration-033.md');
-const outFile = argv.out ? path.isAbsolute(argv.out) ? argv.out : path.join(process.cwd(), argv.out) : defaultOut;
+// Compute the default output filename by scanning the docs/changes
+// directory for the highest existing iteration-NNN.md and incrementing
+// it. This avoids manually bumping the hardcoded filename each run.
+function nextIterationDefault(dir) {
+  const files = fs.readdirSync(dir);
+  let max = 0;
+  const re = /^iteration-(\d+)\.md$/;
+  for (const f of files) {
+    const m = f.match(re);
+    if (m) {
+      const n = parseInt(m[1], 10);
+      if (!Number.isNaN(n) && n > max) max = n;
+    }
+  }
+  const next = max + 1 || 1;
+  const pad = String(next).padStart(3, '0');
+  return path.join(dir, `iteration-${pad}.md`);
+}
+
+const defaultOut = nextIterationDefault(outDir);
+const outFile = argv.out ? (path.isAbsolute(argv.out) ? argv.out : path.join(process.cwd(), argv.out)) : defaultOut;
 
 // Derive a human-friendly header from the output filename so the generated
 // docs header always matches the file name (fixes header/content mismatches).

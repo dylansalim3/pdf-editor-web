@@ -34,7 +34,7 @@ function parseArgs() {
 const argv = parseArgs();
 const outDir = path.join(process.cwd(), 'docs', 'changes');
 if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-const defaultOut = path.join(outDir, 'iteration-016.md');
+const defaultOut = path.join(outDir, 'iteration-018.md');
 const outFile = argv.out ? path.isAbsolute(argv.out) ? argv.out : path.join(process.cwd(), argv.out) : defaultOut;
 
 // Derive a human-friendly header from the output filename so the generated

@@ -354,6 +354,29 @@ for (let i = 0; i < steps.length; i++) {
   }
 }
 
+// Sanity checks: when callers request --use-legacy-peer-deps in dry-run
+// mode, ensure the generated log actually contains the flag in the
+// assembled command lines. Emit a clear log section so automated runs
+// can assert the CLI flags were applied as intended.
+if (argv.dryRun && argv.useLegacyPeerDeps) {
+  log.push('## Sanity Check: legacy-peer-deps flag');
+  log.push('');
+  const found = log.some(line => line.includes('--legacy-peer-deps'));
+  if (found) {
+    log.push('_Confirmed: --legacy-peer-deps appears in generated commands._');
+  } else {
+    log.push('_Warning: --legacy-peer-deps was requested but does not appear in generated commands. Please investigate._');
+    // Also print a runtime warning to aid interactive debugging when running
+    // the script directly.
+    try {
+      console.warn('Sanity check: --use-legacy-peer-deps requested but not present in generated commands');
+    } catch (e) {
+      // ignore console failures in exotic environments
+    }
+  }
+  log.push('');
+}
+
 log.push('');
 log.push('## Summary');
 log.push('');

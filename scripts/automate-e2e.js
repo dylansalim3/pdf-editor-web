@@ -30,7 +30,7 @@ function parseArgs() {
 const argv = parseArgs();
 const outDir = path.join(process.cwd(), 'docs', 'changes');
 if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-const defaultOut = path.join(outDir, 'iteration-014.md');
+const defaultOut = path.join(outDir, 'iteration-015.md');
 const outFile = argv.out ? path.isAbsolute(argv.out) ? argv.out : path.join(process.cwd(), argv.out) : defaultOut;
 
 // Derive a human-friendly header from the output filename so the generated
@@ -112,7 +112,27 @@ if (argv.dryRun) {
 }
 log.push('');
 
+// Write the log file and verify it was written successfully. This helps
+// detect timing/path issues when verification tools check for the file
+// immediately after this script completes.
 fs.writeFileSync(outFile, log.join('\n'), 'utf8');
-console.log('Wrote logs to', outFile);
-if (argv.dryRun) process.exit(0);
-process.exit(previousFailed ? 2 : 0);
+const resolvedOut = path.resolve(outFile);
+if (fs.existsSync(resolvedOut)) {
+  try {
+    const stats = fs.statSync(resolvedOut);
+    if (stats.size > 0) {
+      console.log('Wrote logs to', resolvedOut);
+      if (argv.dryRun) process.exit(0);
+      process.exit(previousFailed ? 2 : 0);
+    } else {
+      console.error('Log file was created but is empty:', resolvedOut);
+      process.exit(3);
+    }
+  } catch (e) {
+    console.error('Wrote log but could not stat the file:', resolvedOut, String(e));
+    process.exit(3);
+  }
+} else {
+  console.error('Failed to write logs to', resolvedOut);
+  process.exit(3);
+}

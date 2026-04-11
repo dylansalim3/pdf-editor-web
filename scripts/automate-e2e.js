@@ -93,10 +93,19 @@ function checkDevDeps() {
     const pkgPath = path.join(process.cwd(), 'package.json');
     if (fs.existsSync(pkgPath)) {
       const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+      // Accept the tools being listed either in devDependencies or dependencies
       const dev = pkg.devDependencies || {};
-      if (!dev.protractor && !dev['webdriver-manager']) {
-        msgs.push('package.json does not list protractor or webdriver-manager in devDependencies.');
+      const deps = pkg.dependencies || {};
+      const hasProtractor = Boolean(dev.protractor || deps.protractor);
+      const hasWebdriver = Boolean(dev['webdriver-manager'] || deps['webdriver-manager']);
+      if (!hasProtractor && !hasWebdriver) {
+        msgs.push('package.json does not list protractor or webdriver-manager in dependencies or devDependencies.');
         ok = false;
+      } else {
+        // If present in dependencies (not dev), log a note so users know why it passed
+        if (deps.protractor || deps['webdriver-manager']) {
+          msgs.push('Note: protractor/webdriver-manager found in dependencies (not devDependencies).');
+        }
       }
     } else {
       msgs.push('package.json not found in workspace root.');

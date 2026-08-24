@@ -1,218 +1,170 @@
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto py-6 sm:py-8 space-y-6">
   <!-- Page Header -->
-  <div class="page-header">
-    <div class="flex items-center space-x-2 mb-2">
-      <a routerLink="/" class="text-secondary-500 hover:text-secondary-700 text-sm">Home</a>
-      <span class="text-secondary-400">/</span>
-      <a routerLink="/convert" class="text-secondary-500 hover:text-secondary-700 text-sm">Convert</a>
-      <span class="text-secondary-400">/</span>
-      <span class="text-secondary-900 font-medium text-sm">PDF to Word</span>
+  <div class="flex items-center justify-between pb-2 border-b border-slate-200/80 dark:border-slate-800/80">
+    <div class="flex items-center space-x-3">
+      <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shadow-xs">
+        <i nz-icon nzType="file-word" class="text-lg"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight font-display">PDF to Word Converter</h1>
+        <p class="text-xs text-slate-400">Convert PDF documents into editable Word (.docx / .doc) files</p>
+      </div>
     </div>
-    <h1 class="page-title">PDF to Word Converter</h1>
-    <p class="page-subtitle">Convert PDF documents to editable Microsoft Word format</p>
   </div>
 
   <div class="space-y-6">
     <!-- Step 1: Upload -->
-    <div class="card">
-      <div class="card-header flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-            <span class="text-blue-600 font-bold text-sm">1</span>
-          </div>
-          <h3 class="font-semibold text-secondary-900">Upload PDF Document</h3>
+    <div class="card p-6 shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-2.5">
+          <span class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-xs font-bold flex items-center justify-center">1</span>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Upload PDF Document</h3>
         </div>
-        <span class="badge bg-secondary-100 text-secondary-600">Required</span>
+        <span class="badge-neutral text-[10px]">Required</span>
       </div>
-      <div class="card-body">
-        <nz-upload
-          nzType="drag"
-          [nzMultiple]="false"
-          [nzBeforeUpload]="beforeUpload"
-          [(nzFileList)]="fileList"
-          class="upload-zone"
-          [class.dragover]="false">
-          <p class="ant-upload-drag-icon">
-            <i nz-icon nzType="file-pdf" nzTheme="outline" class="text-5xl text-red-500"></i>
-          </p>
-          <p class="ant-upload-text text-lg font-medium text-secondary-700 mb-2">
-            Drag & Drop PDF Files Here
-          </p>
-          <p class="ant-upload-hint text-secondary-500">
-            or click to browse • Supports: .pdf
-          </p>
-        </nz-upload>
 
-        <!-- Selected File -->
-        <div *ngIf="fileList.length > 0" class="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <i nz-icon nzType="file-pdf" nzTheme="outline" class="text-2xl text-red-600"></i>
-              <div>
-                <p class="font-medium text-secondary-900">{{ fileList[0].name }}</p>
-                <p class="text-sm text-secondary-500">
-                  {{ formatFileSize(fileList[0].size || 0) }}
-                </p>
-              </div>
-            </div>
-            <button 
-              (click)="fileList = []"
-              class="btn-icon text-secondary-400 hover:text-danger-600">
-              <i nz-icon nzType="close" nzTheme="outline"></i>
-            </button>
+      <nz-upload
+        nzType="drag"
+        [nzMultiple]="false"
+        [nzBeforeUpload]="beforeUpload"
+        [(nzFileList)]="fileList"
+        [nzShowUploadList]="false"
+        class="w-full block">
+        <div class="py-8 flex flex-col items-center justify-center space-y-3">
+          <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shadow-xs">
+            <i nz-icon nzType="file-pdf" class="text-2xl"></i>
+          </div>
+          <div class="text-center">
+            <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Drag & drop PDF here, or click to browse</p>
+            <p class="text-xs text-slate-400 mt-1">Supports standard PDF files (.pdf)</p>
           </div>
         </div>
-      </div>
-    </div>
+      </nz-upload>
 
-    <!-- Step 2: Options -->
-    <div class="card" *ngIf="fileList.length > 0">
-      <div class="card-header flex items-center space-x-3">
-        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-          <span class="text-blue-600 font-bold text-sm">2</span>
-        </div>
-        <h3 class="font-semibold text-secondary-900">Conversion Options</h3>
-      </div>
-      <div class="card-body">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Output Format -->
-          <div>
-            <label class="form-label">Output Format</label>
-            <nz-select [(ngModel)]="options.outputFormat" class="w-full">
-              <nz-option nzValue="docx" nzLabel="DOCX (Word 2007+)"></nz-option>
-              <nz-option nzValue="doc" nzLabel="DOC (Word 97-2003)"></nz-option>
-            </nz-select>
+      <!-- Selected File Preview -->
+      <div *ngIf="fileList.length > 0" class="mt-4 p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/70 dark:border-slate-700/70 flex items-center justify-between animate-fade-in">
+        <div class="flex items-center space-x-3 min-w-0">
+          <div class="w-9 h-9 rounded-lg bg-rose-500 text-white flex items-center justify-center flex-shrink-0">
+            <i nz-icon nzType="file-pdf" nzTheme="fill" class="text-base"></i>
           </div>
-
-          <!-- OCR Language -->
-          <div *ngIf="options.useOcr">
-            <label class="form-label">OCR Language</label>
-            <nz-select [(ngModel)]="options.ocrLanguage" class="w-full">
-              <nz-option 
-                *ngFor="let lang of ocrLanguages" 
-                [nzValue]="lang.value" 
-                [nzLabel]="lang.label">
-              </nz-option>
-            </nz-select>
+          <div class="min-w-0">
+            <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ fileList[0].name }}</p>
+            <p class="text-[11px] font-mono text-slate-400">{{ formatFileSize(fileList[0].size || 0) }}</p>
           </div>
         </div>
-
-        <!-- Checkboxes -->
-        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <label nz-checkbox [(ngModel)]="options.preserveLayout">
-            <span class="text-secondary-700">Preserve original layout</span>
-          </label>
-          <label nz-checkbox [(ngModel)]="options.extractImages">
-            <span class="text-secondary-700">Extract images</span>
-          </label>
-          <label nz-checkbox [(ngModel)]="options.useOcr">
-            <span class="text-secondary-700">Use OCR for scanned PDFs</span>
-          </label>
-          <label nz-checkbox [(ngModel)]="options.includeHeadersFooters">
-            <span class="text-secondary-700">Include headers & footers</span>
-          </label>
-          <label nz-checkbox [(ngModel)]="options.preserveHyperlinks">
-            <span class="text-secondary-700">Preserve hyperlinks</span>
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <!-- Step 3: Convert -->
-    <div class="card" *ngIf="fileList.length > 0 && !converted">
-      <div class="card-header flex items-center space-x-3">
-        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-          <span class="text-blue-600 font-bold text-sm">3</span>
-        </div>
-        <h3 class="font-semibold text-secondary-900">Convert</h3>
-      </div>
-      <div class="card-body">
-        <div class="text-center py-6">
-          <button 
-            (click)="onConvert()"
-            [disabled]="converting"
-            class="btn-primary text-lg px-8 py-3">
-            <i nz-icon nzType="swap" nzTheme="outline" class="mr-2"></i>
-            <span *ngIf="!converting">Convert to Word</span>
-            <span *ngIf="converting">Converting...</span>
-          </button>
-        </div>
-
-        <!-- Progress -->
-        <div *ngIf="converting" class="mt-4">
-          <nz-progress 
-            [nzPercent]="conversionProgress" 
-            [nzStatus]="conversionProgress < 100 ? 'active' : 'success'"
-            nzStrokeWidth="8">
-          </nz-progress>
-          <p class="text-center text-sm text-secondary-500 mt-2">
-            {{ conversionProgress < 30 ? 'Analyzing document...' : 
-               conversionProgress < 60 ? 'Extracting text and images...' : 
-               conversionProgress < 90 ? 'Reconstructing document...' : 
-               'Finalizing...' }}
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Step 4: Preview & Download -->
-    <div class="card" *ngIf="converted && convertedFile">
-      <div class="card-header flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="w-8 h-8 bg-success-100 rounded-lg flex items-center justify-center">
-            <i nz-icon nzType="check" nzTheme="outline" class="text-success-600"></i>
-          </div>
-          <h3 class="font-semibold text-secondary-900">Conversion Complete</h3>
-        </div>
-        <button 
-          (click)="showPreview = !showPreview"
-          class="btn-secondary text-sm">
-          <i nz-icon nzType="eye" nzTheme="outline" class="mr-2"></i>
-          {{ showPreview ? 'Hide' : 'Show' }} Preview
+        <button (click)="fileList = []" class="p-1 text-slate-400 hover:text-rose-500">
+          <i nz-icon nzType="close" class="text-xs"></i>
         </button>
       </div>
-      <div class="card-body">
-        <!-- File Info -->
-        <div class="p-4 bg-success-50 rounded-lg border border-success-200 mb-6">
-          <div class="flex items-center space-x-3">
-            <i nz-icon nzType="file-word" nzTheme="outline" class="text-3xl text-blue-500"></i>
-            <div class="flex-1">
-              <p class="font-medium text-secondary-900">{{ convertedFile.name }}</p>
-              <p class="text-sm text-secondary-500">
-                {{ formatFileSize(convertedFile.size) }} • {{ convertedFile.pages }} pages
-              </p>
-            </div>
-          </div>
+    </div>
+
+    <!-- Step 2: Conversion Options -->
+    <div class="card p-6 shadow-sm space-y-5 animate-fade-in" *ngIf="fileList.length > 0">
+      <div class="flex items-center space-x-2.5">
+        <span class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-xs font-bold flex items-center justify-center">2</span>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Conversion Parameters</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="form-label">Output Word Format</label>
+          <nz-select [(ngModel)]="options.outputFormat" class="w-full text-xs">
+            <nz-option nzValue="docx" nzLabel="DOCX (Modern Word 2007+)"></nz-option>
+            <nz-option nzValue="doc" nzLabel="DOC (Legacy Word 97-2003)"></nz-option>
+          </nz-select>
         </div>
 
-        <!-- Text Preview -->
-        <div *ngIf="showPreview" class="mb-6">
-          <div class="flex items-center justify-between mb-3">
-            <h4 class="font-medium text-secondary-900">Extracted Text Preview</h4>
-            <button 
-              (click)="copyToClipboard()"
-              class="btn-secondary text-sm">
-              <i nz-icon nzType="copy" nzTheme="outline" class="mr-2"></i>
-              Copy Text
-            </button>
-          </div>
-          <div class="bg-secondary-50 border border-secondary-200 rounded-lg p-4 max-h-64 overflow-y-auto">
-            <pre class="text-sm text-secondary-700 whitespace-pre-wrap font-sans">{{ extractedText }}</pre>
-          </div>
+        <div *ngIf="options.useOcr">
+          <label class="form-label">OCR Recognition Language</label>
+          <nz-select [(ngModel)]="options.ocrLanguage" class="w-full text-xs">
+            <nz-option *ngFor="let lang of ocrLanguages" [nzValue]="lang.value" [nzLabel]="lang.label"></nz-option>
+          </nz-select>
         </div>
+      </div>
 
-        <!-- Actions -->
-        <div class="flex flex-col sm:flex-row gap-3">
-          <button (click)="onDownload()" class="btn-primary flex-1">
-            <i nz-icon nzType="download" nzTheme="outline" class="mr-2"></i>
-            Download Word Document
-          </button>
-          <button (click)="onReset()" class="btn-secondary flex-1">
-            <i nz-icon nzType="reload" nzTheme="outline" class="mr-2"></i>
-            Convert Another
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+        <label nz-checkbox [(ngModel)]="options.preserveLayout" class="text-xs text-slate-700 dark:text-slate-300">
+          <span class="text-xs font-medium">Preserve typography & margins</span>
+        </label>
+        <label nz-checkbox [(ngModel)]="options.extractImages" class="text-xs text-slate-700 dark:text-slate-300">
+          <span class="text-xs font-medium">Embed extracted high-res images</span>
+        </label>
+        <label nz-checkbox [(ngModel)]="options.useOcr" class="text-xs text-slate-700 dark:text-slate-300">
+          <span class="text-xs font-medium">OCR for scanned bitmap documents</span>
+        </label>
+        <label nz-checkbox [(ngModel)]="options.includeHeadersFooters" class="text-xs text-slate-700 dark:text-slate-300">
+          <span class="text-xs font-medium">Include running headers & footers</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Step 3: Convert Action -->
+    <div class="card p-6 shadow-sm text-center" *ngIf="fileList.length > 0 && !converted">
+      <button 
+        (click)="onConvert()"
+        [disabled]="converting"
+        class="btn-glow px-8 py-3 text-xs font-bold shadow-md">
+        <i nz-icon nzType="swap" nzTheme="outline" class="mr-1.5"></i>
+        {{ converting ? 'Converting Document...' : 'Convert to Word Document' }}
+      </button>
+
+      <div *ngIf="converting" class="mt-5 space-y-2">
+        <nz-progress 
+          [nzPercent]="conversionProgress" 
+          [nzStatus]="conversionProgress < 100 ? 'active' : 'success'">
+        </nz-progress>
+        <p class="text-xs text-slate-400">
+          {{ conversionProgress < 30 ? 'Analyzing typography and structure...' : 
+             conversionProgress < 60 ? 'Extracting text and glyph layers...' : 
+             conversionProgress < 90 ? 'Synthesizing Word docx package...' : 
+             'Finishing export...' }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Step 4: Download & Result -->
+    <div class="card p-6 shadow-sm space-y-5 animate-fade-in" *ngIf="converted && convertedFile">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-7 h-7 bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-lg flex items-center justify-center">
+            <i nz-icon nzType="check" class="text-sm"></i>
+          </div>
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white">Conversion Finished</h3>
+        </div>
+        <button (click)="showPreview = !showPreview" class="btn-secondary px-3 py-1 text-xs">
+          <i nz-icon nzType="eye" class="mr-1"></i> {{ showPreview ? 'Hide Preview' : 'Show Preview' }}
+        </button>
+      </div>
+
+      <div class="p-3.5 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-xl border border-emerald-200/60 dark:border-emerald-800/60 flex items-center space-x-3">
+        <i nz-icon nzType="file-word" class="text-2xl text-blue-600 dark:text-blue-400"></i>
+        <div>
+          <p class="text-xs font-bold text-slate-900 dark:text-white">{{ convertedFile.name }}</p>
+          <p class="text-[11px] font-mono text-slate-400">{{ formatFileSize(convertedFile.size) }} • {{ convertedFile.pages }} pages</p>
+        </div>
+      </div>
+
+      <div *ngIf="showPreview" class="space-y-2">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300">Extracted Text</h4>
+          <button (click)="copyToClipboard()" class="btn-secondary px-2.5 py-1 text-[11px]">
+            <i nz-icon nzType="copy" class="mr-1"></i> Copy
           </button>
         </div>
+        <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-3 max-h-48 overflow-y-auto font-mono text-xs text-slate-700 dark:text-slate-300">
+          <pre class="whitespace-pre-wrap font-mono">{{ extractedText }}</pre>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 pt-2">
+        <button (click)="onDownload()" class="btn-primary flex-1 py-2.5 text-xs font-semibold">
+          <i nz-icon nzType="download" class="mr-1.5"></i> Download Word File
+        </button>
+        <button (click)="onReset()" class="btn-secondary flex-1 py-2.5 text-xs font-semibold">
+          <i nz-icon nzType="reload" class="mr-1.5"></i> Convert Another
+        </button>
       </div>
     </div>
   </div>
 </div>
+

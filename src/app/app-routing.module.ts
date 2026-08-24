@@ -46,6 +46,10 @@ const routes: Routes = [
       { path: 'pdf-rotate', loadChildren: () => import('./pdf-rotate/pdf-rotate.module').then(m => m.PdfRotateModule) },
       { path: 'stitch', loadChildren: () => import('./stitch/stitch.module').then(m => m.StitchModule) }
     ]
+  },
+  { 
+    path: 'studio', 
+    loadChildren: () => import('./studio/studio.module').then(m => m.StudioModule) 
   }
 ];
 

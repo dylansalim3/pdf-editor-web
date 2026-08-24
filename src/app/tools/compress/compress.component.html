@@ -1,17 +1,165 @@
-<div class="max-w-4xl mx-auto py-10 px-4">
-  <div class="page-header mb-8">
-    <h1 class="text-3xl font-bold text-secondary-900 mb-2">Compress PDF</h1>
-    <p class="text-secondary-500">Reduce the file size of your PDF document without losing extreme quality.</p>
+<div class="max-w-4xl mx-auto py-6 sm:py-8 space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between pb-3 border-b border-slate-200/80 dark:border-slate-800/80">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-xs">
+        <i nz-icon nzType="compress" class="text-xl"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight font-display">Compress & Optimize PDF</h1>
+        <p class="text-xs text-slate-400">Reduce PDF file size via stream optimization while maintaining high visual fidelity</p>
+      </div>
+    </div>
   </div>
-  
-  <div class="card p-6">
-    <h3 class="font-semibold mb-4 text-lg">Select PDF</h3>
-    <input type="file" accept=".pdf" (change)="onPdf($event)" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100" />
-    <p class="text-sm mt-3 font-medium text-secondary-900 truncate" *ngIf="pdfFile">Selected: {{pdfFile.name}}</p>
+
+  <div class="space-y-6">
+    <!-- Upload Card -->
+    <div class="card p-6 shadow-sm">
+      <nz-upload
+        nzType="drag"
+        [nzMultiple]="false"
+        [nzBeforeUpload]="beforeUpload"
+        [(nzFileList)]="fileList"
+        [nzShowUploadList]="false"
+        class="w-full block">
+        <div class="py-8 flex flex-col items-center justify-center space-y-3">
+          <div class="w-16 h-16 rounded-3xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-md shadow-emerald-500/10">
+            <i nz-icon nzType="file-pdf" class="text-3xl"></i>
+          </div>
+          <div class="text-center space-y-1">
+            <p class="text-sm font-bold text-slate-800 dark:text-slate-200">Drag & drop PDF here, or <span class="text-emerald-600 dark:text-emerald-400 underline">browse</span></p>
+            <p class="text-xs text-slate-400">Local in-browser compression without server uploads</p>
+          </div>
+        </div>
+      </nz-upload>
+
+      <!-- Selected File Card -->
+      <div *ngIf="pdfFile" class="mt-4 p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/70 dark:border-slate-700/70 flex items-center justify-between animate-fade-in">
+        <div class="flex items-center space-x-3 min-w-0">
+          <div class="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+            <i nz-icon nzType="file-pdf" nzTheme="fill" class="text-base"></i>
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ pdfFile.name }}</p>
+            <p class="text-[11px] font-mono text-slate-400">Original Size: {{ formatFileSize(originalSize) }}</p>
+          </div>
+        </div>
+        <button (click)="pdfFile = null; compressedBlobUrl = null" class="p-1 text-slate-400 hover:text-rose-500">
+          <i nz-icon nzType="close" class="text-xs"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Optimization Options & CTA -->
+    <div class="card p-6 shadow-sm space-y-5 animate-fade-in" *ngIf="pdfFile && !compressedBlobUrl">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Compression Profile</h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <!-- Preset 1 -->
+        <div 
+          (click)="compressionLevel = 'extreme'" 
+          class="p-4 rounded-xl border-2 cursor-pointer transition-all space-y-2 bg-slate-50/50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800"
+          [class.border-emerald-500]="compressionLevel === 'extreme'"
+          [class.tool-icon-emerald]="compressionLevel === 'extreme'">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-900 dark:text-white">Extreme</span>
+            <span class="badge-neutral text-[9px]">Max Savings</span>
+          </div>
+          <p class="text-[11px] text-slate-500">Compact binary, stripped streams, best for email limits.</p>
+        </div>
+
+        <!-- Preset 2 -->
+        <div 
+          (click)="compressionLevel = 'recommended'" 
+          class="p-4 rounded-xl border-2 cursor-pointer transition-all space-y-2 bg-slate-50/50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800"
+          [class.border-emerald-500]="compressionLevel === 'recommended'"
+          [class.tool-icon-emerald]="compressionLevel === 'recommended'">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-900 dark:text-white">Recommended</span>
+            <span class="badge-success text-[9px]">Balanced</span>
+          </div>
+          <p class="text-[11px] text-slate-500">Strong compression while maintaining text & vector sharpness.</p>
+        </div>
+
+        <!-- Preset 3 -->
+        <div 
+          (click)="compressionLevel = 'less'" 
+          class="p-4 rounded-xl border-2 cursor-pointer transition-all space-y-2 bg-slate-50/50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800"
+          [class.border-emerald-500]="compressionLevel === 'less'"
+          [class.tool-icon-emerald]="compressionLevel === 'less'">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-900 dark:text-white">High Quality</span>
+            <span class="badge-neutral text-[9px]">Minimal</span>
+          </div>
+          <p class="text-[11px] text-slate-500">Preserves original high DPI raster images and full structure.</p>
+        </div>
+      </div>
+
+
+      <div class="pt-3 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <label nz-checkbox [(ngModel)]="stripMetadata" class="text-xs text-slate-700 dark:text-slate-300">
+          <span class="text-xs font-medium">Strip metadata & author streams</span>
+        </label>
+        <label nz-checkbox [(ngModel)]="useObjectStreams" class="text-xs text-slate-700 dark:text-slate-300">
+          <span class="text-xs font-medium">Enable Cross-Reference Object Streams</span>
+        </label>
+      </div>
+
+      <button 
+        (click)="process()" 
+        [disabled]="processing"
+        class="btn-glow w-full py-3 text-xs font-bold shadow-md">
+        <i nz-icon nzType="compress" class="mr-1.5"></i>
+        {{ processing ? 'Optimizing PDF Document...' : 'Compress PDF File' }}
+      </button>
+
+      <div *ngIf="processing" class="space-y-1.5 pt-2">
+        <nz-progress [nzPercent]="compressionProgress" nzStatus="active"></nz-progress>
+        <p class="text-xs text-slate-400 text-center">Optimizing stream dictionaries... {{ compressionProgress }}%</p>
+      </div>
+    </div>
+
+    <!-- Optimization Result Card -->
+    <div *ngIf="compressedBlobUrl" class="card p-6 shadow-md border-emerald-500/30 bg-emerald-50/30 dark:bg-emerald-950/20 space-y-5 animate-fade-in">
+      <div class="flex items-center justify-between pb-3 border-b border-emerald-200/50 dark:border-emerald-800/50">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-300 flex items-center justify-center">
+            <i nz-icon nzType="check" class="text-base"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Compression Complete</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 font-mono">{{ formatFileSize(originalSize) }} → {{ formatFileSize(compressedSize) }}</p>
+          </div>
+        </div>
+        <span *ngIf="getSavingsPercent() > 0" class="badge-success text-xs font-bold font-mono">
+          -{{ getSavingsPercent() }}% Saved
+        </span>
+      </div>
+
+      <!-- Before & After Comparison Meter -->
+      <div class="grid grid-cols-2 gap-4 p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800/70">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-slate-400">Original Size</span>
+          <p class="text-lg font-bold font-mono text-slate-700 dark:text-slate-300">{{ formatFileSize(originalSize) }}</p>
+        </div>
+        <div>
+          <span class="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400">Optimized Size</span>
+          <p class="text-lg font-bold font-mono text-emerald-600 dark:text-emerald-400">{{ formatFileSize(compressedSize) }}</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 pt-1">
+        <button (click)="download()" class="btn-glow flex-1 py-2.5 text-xs font-bold">
+          <i nz-icon nzType="download" class="mr-1.5"></i> Download Optimized PDF
+        </button>
+        <button (click)="openInEditor()" class="btn-secondary flex-1 py-2.5 text-xs font-semibold">
+          <i nz-icon nzType="edit" class="mr-1.5"></i> Open in Studio Editor
+        </button>
+        <button (click)="pdfFile = null; compressedBlobUrl = null" class="btn-ghost px-4 py-2.5 text-xs font-semibold text-slate-500">
+          Compress Another
+        </button>
+      </div>
+    </div>
   </div>
-  
-  <button (click)="process()" [disabled]="!pdfFile || processing" class="btn-primary mt-8 flex justify-center w-full py-4 text-lg font-medium shadow-md hover:shadow-lg">
-    <span *ngIf="!processing">Compress Document</span>
-    <span *ngIf="processing">Compressing...</span>
-  </button>
 </div>
+

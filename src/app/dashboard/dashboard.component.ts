@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Store } from '@ngxs/store';
+import { StoreBlobFile } from '../pdf-rotate/actions/pdf-rotate.actions';
+
 
 interface ToolCategory {
+  id: string;
   title: string;
   tools: Tool[];
 }
@@ -12,6 +17,7 @@ interface Tool {
   icon: string;
   route: string;
   color: string;
+  badge?: string;
 }
 
 @Component({
@@ -20,87 +26,128 @@ interface Tool {
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  recentFiles: any[] = [];
+  searchQuery = '';
+  activeFilter = 'all';
 
   quickActions: Tool[] = [
     {
       id: 'rotate',
       name: 'Rotate Pages',
-      description: 'Rotate PDF pages',
+      description: 'Rotate single or all PDF pages in any orientation',
       icon: 'rotate-right',
       route: '/tools/rotate',
-      color: 'blue'
+      color: 'indigo',
+      badge: 'POPULAR'
     },
     {
       id: 'delete',
       name: 'Delete Pages',
-      description: 'Remove pages from PDF',
+      description: 'Selectively remove unwanted pages or ranges',
       icon: 'delete',
       route: '/tools/delete',
-      color: 'red'
-    },
-    {
-      id: 'watermark',
-      name: 'Add Watermark',
-      description: 'Add text watermarks',
-      icon: 'copyright',
-      route: '/tools/watermark',
-      color: 'purple'
+      color: 'rose'
     },
     {
       id: 'merge',
       name: 'Merge PDFs',
-      description: 'Combine multiple PDFs',
+      description: 'Combine multiple PDF files into one clean doc',
       icon: 'merge-cells',
       route: '/tools/merge',
-      color: 'green'
+      color: 'emerald',
+      badge: 'TOP'
+    },
+    {
+      id: 'watermark',
+      name: 'Watermark',
+      description: 'Stamp custom diagonal or horizontal text overlay',
+      icon: 'copyright',
+      route: '/tools/watermark',
+      color: 'violet'
     }
   ];
 
   toolCategories: ToolCategory[] = [
     {
-      title: 'Page Management',
+      id: 'pages',
+      title: 'Page Suite',
       tools: [
-        { id: 'rotate', name: 'Rotate Pages', description: 'Rotate left or right', icon: 'rotate-right', route: '/tools/rotate', color: 'blue' },
-        { id: 'delete', name: 'Delete Pages', description: 'Remove pages', icon: 'delete', route: '/tools/delete', color: 'red' },
-        { id: 'reorder', name: 'Reorder Pages', description: 'Change page order', icon: 'swap', route: '/tools/reorder', color: 'orange' },
-        { id: 'extract', name: 'Extract Pages', description: 'Save specific pages', icon: 'file-excel', route: '/tools/extract', color: 'cyan' },
+        { id: 'rotate', name: 'Rotate Pages', description: 'Rotate left, right, or 180°', icon: 'rotate-right', route: '/tools/rotate', color: 'indigo', badge: 'TOP' },
+        { id: 'delete', name: 'Delete Pages', description: 'Remove single/range pages', icon: 'delete', route: '/tools/delete', color: 'rose' },
+        { id: 'reorder', name: 'Reorder Pages', description: 'Drag & rearrange order', icon: 'swap', route: '/tools/reorder', color: 'amber' },
+        { id: 'extract', name: 'Extract Pages', description: 'Export specific pages', icon: 'export', route: '/tools/extract', color: 'sky' },
+        { id: 'insert', name: 'Insert Pages', description: 'Add new pages into PDF', icon: 'file-add', route: '/tools/insert', color: 'teal' },
       ]
     },
     {
-      title: 'Content Modification',
-      tools: [
-        { id: 'watermark', name: 'Add Watermark', description: 'Text & image watermarks', icon: 'copyright', route: '/tools/watermark', color: 'purple' },
-        { id: 'sign', name: 'Sign PDF', description: 'Digital signatures', icon: 'edit', route: '/tools/sign', color: 'indigo' },
-        { id: 'annotate', name: 'Annotate', description: 'Highlight & comment', icon: 'highlight', route: '/tools/annotate', color: 'pink' },
-      ]
-    },
-    {
+      id: 'operations',
       title: 'Document Operations',
       tools: [
-        { id: 'merge', name: 'Merge PDFs', description: 'Combine files', icon: 'merge-cells', route: '/tools/merge', color: 'green' },
-        { id: 'split', name: 'Split PDF', description: 'Divide into parts', icon: 'scissor', route: '/tools/split', color: 'teal' },
-        { id: 'compress', name: 'Compress', description: 'Reduce file size', icon: 'compress', route: '/tools/compress', color: 'yellow' },
-        { id: 'protect', name: 'Protect', description: 'Password & encryption', icon: 'lock', route: '/tools/protect', color: 'gray' },
+        { id: 'merge', name: 'Merge PDFs', description: 'Combine multiple documents', icon: 'merge-cells', route: '/tools/merge', color: 'emerald', badge: 'HOT' },
+        { id: 'split', name: 'Split PDF', description: 'Divide document into parts', icon: 'scissor', route: '/tools/split', color: 'cyan' },
+        { id: 'compress', name: 'Compress PDF', description: 'Optimize & reduce file size', icon: 'compress', route: '/tools/compress', color: 'amber' },
+        { id: 'protect', name: 'Protect PDF', description: 'Password & secure lock', icon: 'lock', route: '/tools/protect', color: 'purple' },
+        { id: 'watermark', name: 'Add Watermark', description: 'Overlay customized text', icon: 'copyright', route: '/tools/watermark', color: 'violet' },
+        { id: 'sign', name: 'Sign & Annotate', description: 'Electronic signature & notes', icon: 'form', route: '/tools/sign', color: 'blue' },
       ]
     },
     {
-      title: 'Convert',
+      id: 'convert',
+      title: 'Conversion Suite',
       tools: [
-        { id: 'word-to-pdf', name: 'Word to PDF', description: 'Convert DOCX files', icon: 'file-word', route: '/convert/word-to-pdf', color: 'blue' },
-        { id: 'pdf-to-word', name: 'PDF to Word', description: 'Convert to DOCX', icon: 'file-text', route: '/convert/pdf-to-word', color: 'blue' },
-        { id: 'pdf-to-text', name: 'PDF to Text', description: 'Extract plain text', icon: 'file-text', route: '/convert/pdf-to-text', color: 'gray' },
+        { id: 'word-to-pdf', name: 'Word to PDF', description: 'Convert .docx files into PDF', icon: 'file-word', route: '/convert/word-to-pdf', color: 'blue' },
+        { id: 'pdf-to-word', name: 'PDF to Word', description: 'Export document to editable DOCX', icon: 'file-text', route: '/convert/pdf-to-word', color: 'indigo' },
+        { id: 'pdf-to-text', name: 'PDF to Text', description: 'Extract clean OCR plain text', icon: 'file-search', route: '/convert/pdf-to-text', color: 'slate', badge: 'OCR' },
+        { id: 'image-to-pdf', name: 'Image to PDF', description: 'Convert JPG / PNG into PDF', icon: 'file-image', route: '/convert/image-to-pdf', color: 'pink' },
+        { id: 'pdf-to-image', name: 'PDF to Image', description: 'Render pages as JPEG / PNG', icon: 'picture', route: '/convert/pdf-to-image', color: 'emerald' },
       ]
     }
   ];
 
-  ngOnInit(): void {
-    // Load recent files from localStorage or state
-    this.loadRecentFiles();
+  constructor(
+    private router: Router,
+    private store: Store
+  ) {}
+
+  ngOnInit(): void {}
+
+  setFilter(filterId: string): void {
+    this.activeFilter = filterId;
   }
 
-  private loadRecentFiles(): void {
-    // Placeholder for recent files
-    this.recentFiles = [];
+  get filteredCategories(): ToolCategory[] {
+    let list = this.toolCategories;
+    if (this.activeFilter !== 'all') {
+      list = list.filter(c => c.id === this.activeFilter);
+    }
+    if (!this.searchQuery.trim()) {
+      return list;
+    }
+    const q = this.searchQuery.toLowerCase();
+    return list.map(c => ({
+      ...c,
+      tools: c.tools.filter(t => t.name.toLowerCase().includes(q) || t.description.toLowerCase().includes(q))
+    })).filter(c => c.tools.length > 0);
+  }
+
+
+  async onFileDropped(event: DragEvent): Promise<void> {
+    event.preventDefault();
+    const file = event.dataTransfer?.files?.[0];
+    if (file && (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.store.dispatch(new StoreBlobFile(reader.result as string));
+        this.router.navigate(['/pdf-rotate/editor']);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.router.navigate(['/upload']);
+    }
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
   }
 }
+
+

@@ -1,1 +1,179 @@
-<p>extract works!</p>
+<div class="max-w-6xl mx-auto py-6 sm:py-8 space-y-6">
+  <!-- Page Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200/80 dark:border-slate-800/80">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center shadow-xs">
+        <i nz-icon nzType="scissor" class="text-xl"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight font-display">Extract PDF Pages</h1>
+        <p class="text-xs text-slate-400">Select and extract specific pages into an independent new PDF document</p>
+      </div>
+    </div>
+
+    <div *ngIf="pages.length > 0" class="flex items-center space-x-2">
+      <button 
+        (click)="extractSelectedPages()" 
+        [disabled]="getSelectedCount() === 0 || extracting"
+        class="btn-glow px-4 py-1.5 text-xs font-bold shadow-md">
+        <i nz-icon nzType="download" class="mr-1"></i>
+        {{ extracting ? 'Extracting...' : 'Extract (' + getSelectedCount() + ') Pages' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Upload Area -->
+  <div class="card p-6 shadow-sm" *ngIf="pages.length === 0 && !loading">
+    <nz-upload
+      nzType="drag"
+      [nzMultiple]="false"
+      [nzBeforeUpload]="beforeUpload"
+      [(nzFileList)]="fileList"
+      [nzShowUploadList]="false"
+      class="w-full block">
+      <div class="py-10 flex flex-col items-center justify-center space-y-3">
+        <div class="w-16 h-16 rounded-3xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center shadow-md shadow-teal-500/10">
+          <i nz-icon nzType="file-pdf" class="text-3xl"></i>
+        </div>
+        <div class="text-center space-y-1">
+          <p class="text-sm font-bold text-slate-800 dark:text-slate-200">Drop PDF here or click to extract pages</p>
+          <p class="text-xs text-slate-400">Choose pages visually or by numeric ranges</p>
+        </div>
+      </div>
+    </nz-upload>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="card p-12 text-center shadow-sm space-y-3">
+    <nz-spin nzSize="large"></nz-spin>
+    <p class="text-xs font-semibold text-slate-700 dark:text-slate-300">Rendering document pages...</p>
+  </div>
+
+  <!-- Main Workspace -->
+  <div *ngIf="pages.length > 0" class="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fade-in">
+    <!-- Controls Sidebar -->
+    <div class="lg:col-span-4 space-y-4">
+      <div class="card p-5 shadow-sm space-y-4">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Extraction Mode</h3>
+
+        <nz-radio-group [(ngModel)]="mode" class="flex flex-col space-y-2.5">
+          <label nz-radio nzValue="select" class="text-xs text-slate-700 dark:text-slate-300">
+            <span class="font-medium">Visual Selection (Click Tiles)</span>
+          </label>
+          <label nz-radio nzValue="range" class="text-xs text-slate-700 dark:text-slate-300">
+            <span class="font-medium">Page Range</span>
+          </label>
+          <label nz-radio nzValue="custom" class="text-xs text-slate-700 dark:text-slate-300">
+            <span class="font-medium">Custom Page Numbers</span>
+          </label>
+        </nz-radio-group>
+
+        <!-- Range Inputs -->
+        <div *ngIf="mode === 'range'" class="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="form-label text-[11px]">From</label>
+              <nz-input-number [(ngModel)]="rangeStart" [nzMin]="1" [nzMax]="pages.length" nzSize="small" class="w-full"></nz-input-number>
+            </div>
+            <div>
+              <label class="form-label text-[11px]">To</label>
+              <nz-input-number [(ngModel)]="rangeEnd" [nzMin]="1" [nzMax]="pages.length" nzSize="small" class="w-full"></nz-input-number>
+            </div>
+          </div>
+          <button (click)="applyRangeSelection()" class="btn-secondary w-full py-1.5 text-xs font-semibold">
+            Apply Range
+          </button>
+        </div>
+
+        <!-- Custom Input -->
+        <div *ngIf="mode === 'custom'" class="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <div>
+            <label class="form-label text-[11px]">Indices (e.g. 1, 3, 5-8)</label>
+            <input type="text" [(ngModel)]="customPagesInput" placeholder="1, 3, 5-8" class="form-input text-xs py-1.5 font-mono" />
+          </div>
+          <button (click)="applyCustomSelection()" class="btn-secondary w-full py-1.5 text-xs font-semibold">
+            Apply Selection
+          </button>
+        </div>
+
+        <!-- Quick Filter Pills -->
+        <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap gap-1.5">
+          <button (click)="selectAll()" class="btn-secondary px-2.5 py-1 text-[11px]">Select All</button>
+          <button (click)="selectNone()" class="btn-secondary px-2.5 py-1 text-[11px]">None</button>
+          <button (click)="selectOdd()" class="btn-secondary px-2.5 py-1 text-[11px]">Odd Pages</button>
+          <button (click)="selectEven()" class="btn-secondary px-2.5 py-1 text-[11px]">Even Pages</button>
+        </div>
+      </div>
+
+      <div class="card p-4 shadow-sm bg-slate-50 dark:bg-slate-900/50 space-y-2">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-slate-500">Total Document Pages:</span>
+          <span class="font-bold font-mono text-slate-800 dark:text-slate-200">{{ pages.length }}</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-slate-500">Pages Selected:</span>
+          <span class="font-bold font-mono text-teal-600 dark:text-teal-400">{{ getSelectedCount() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thumbnails Gallery -->
+    <div class="lg:col-span-8 space-y-3">
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[620px] overflow-y-auto scrollbar-thin p-1">
+        <div
+          *ngFor="let page of pages; let i = index"
+          (click)="togglePage(i)"
+          class="card p-2 flex flex-col items-center cursor-pointer transition-all duration-150 relative border-2 hover:border-teal-400 group border-slate-200 dark:border-slate-800"
+          [class.border-teal-500]="page.selected"
+          [class.tool-icon-teal]="page.selected">
+
+
+          <!-- Checkbox overlay -->
+          <div class="w-full flex items-center justify-between mb-1 px-1">
+            <span class="text-[11px] font-mono font-bold" [class.text-teal-600]="page.selected" [class.text-slate-400]="!page.selected">
+              Page {{ page.pageNumber }}
+            </span>
+            <div 
+              class="w-4 h-4 rounded flex items-center justify-center text-[10px] transition-colors"
+              [class.bg-teal-500]="page.selected"
+              [class.text-white]="page.selected"
+              [class.bg-slate-100]="!page.selected">
+              <i *ngIf="page.selected" nz-icon nzType="check"></i>
+            </div>
+          </div>
+
+          <!-- Thumbnail Image -->
+          <div class="w-full aspect-[3/4] bg-slate-50 dark:bg-slate-950 rounded overflow-hidden flex items-center justify-center">
+            <img *ngIf="page.thumbnailUrl" [src]="page.thumbnailUrl" alt="Page {{ page.pageNumber }}" class="max-w-full max-h-full object-contain" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Download & Action Banner -->
+  <div *ngIf="extractedBlobUrl" class="card p-6 shadow-md border-emerald-500/30 bg-emerald-50/30 dark:bg-emerald-950/20 space-y-4 animate-fade-in">
+    <div class="flex items-center justify-between pb-3 border-b border-emerald-200/50 dark:border-emerald-800/50">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-300 flex items-center justify-center">
+          <i nz-icon nzType="check" class="text-base"></i>
+        </div>
+        <div>
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white">Extraction Finished</h3>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 font-mono">{{ extractedPageCount }} Pages Extracted</p>
+        </div>
+      </div>
+      <span class="badge-success text-xs">Ready</span>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-3 pt-2">
+      <button (click)="download()" class="btn-glow flex-1 py-2.5 text-xs font-bold">
+        <i nz-icon nzType="download" class="mr-1.5"></i> Download Extracted PDF
+      </button>
+      <button (click)="openInEditor()" class="btn-secondary flex-1 py-2.5 text-xs font-semibold">
+        <i nz-icon nzType="edit" class="mr-1.5"></i> Open in Full Studio Editor
+      </button>
+    </div>
+  </div>
+</div>
+

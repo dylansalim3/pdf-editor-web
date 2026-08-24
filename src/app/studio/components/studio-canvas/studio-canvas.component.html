@@ -1,0 +1,187 @@
+<div 
+  #canvasContainer
+  class="relative flex-1 h-full w-full overflow-auto flex flex-col items-center justify-start p-8 md:p-12 select-none scrollbar-thin transition-colors duration-200"
+  [ngClass]="darkMode ? 'bg-slate-950 bg-grid-dark' : 'bg-slate-100 bg-grid-light'">
+  
+  <!-- Floating Tool Palette -->
+  <div class="sticky top-0 mb-8 z-30">
+    <app-floating-toolbar [darkMode]="darkMode"></app-floating-toolbar>
+  </div>
+
+  <!-- Loading State Indicator -->
+  <div *ngIf="rendering" class="absolute inset-0 flex items-center justify-center bg-slate-900/30 backdrop-blur-xs z-20">
+    <div class="px-4 py-2.5 rounded-2xl bg-slate-900 text-white shadow-xl flex items-center space-x-3 text-xs font-semibold">
+      <i nz-icon nzType="loading" nzTheme="outline" class="text-indigo-400 text-base"></i>
+      <span>Rendering high-res page...</span>
+    </div>
+  </div>
+
+  <!-- Main Canvas Card & Interactive Overlay -->
+  <div 
+    class="relative shadow-2xl rounded-sm transition-transform duration-100"
+    [style.width.px]="canvasWidth"
+    [style.height.px]="canvasHeight"
+    [class.cursor-grab]="(activeTool$ | async) === 'pan' && !isPanning"
+    [class.cursor-grabbing]="isPanning"
+    [class.cursor-crosshair]="['draw', 'highlight', 'rectangle', 'circle', 'redact'].includes((activeTool$ | async) || '')"
+    [class.cursor-text]="(activeTool$ | async) === 'text'">
+
+    <!-- Native PDF.js Canvas Layer -->
+    <canvas 
+      #pdfCanvas
+      class="w-full h-full block bg-white shadow-md">
+    </canvas>
+
+    <!-- Vector & SVG Annotation Overlay Layer -->
+    <svg 
+      class="absolute inset-0 w-full h-full pointer-events-auto"
+      (mousedown)="onMouseDown($event)"
+      (mousemove)="onMouseMove($event)"
+      (mouseup)="onMouseUp($event)">
+
+      <!-- Live drawing path preview -->
+      <path 
+        *ngIf="isDrawing && currentPath"
+        [attr.d]="currentPath"
+        [attr.stroke]="(activeTool$ | async) === 'highlight' ? '#fde047' : '#4f46e5'"
+        [attr.stroke-width]="(activeTool$ | async) === 'highlight' ? 12 : 3"
+        [attr.opacity]="(activeTool$ | async) === 'highlight' ? 0.35 : 1"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round" />
+
+      <!-- Rendered Annotations on Active Page -->
+      <ng-container *ngFor="let ann of activeAnnotations$ | async">
+        
+        <!-- Vector Freehand Path (Pen / Highlighter) -->
+        <path 
+          *ngIf="(ann.type === 'draw' || ann.type === 'highlight') && ann.svgPath"
+          [attr.d]="ann.svgPath"
+          [attr.stroke]="ann.color"
+          [attr.stroke-width]="ann.strokeWidth || 3"
+          [attr.opacity]="ann.opacity || 1"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          (click)="onSelectAnnotation(ann, $event)"
+          class="cursor-pointer hover:opacity-80 transition-opacity" />
+
+        <!-- Rectangle Shape -->
+        <rect 
+          *ngIf="ann.type === 'rectangle'"
+          [attr.x]="ann.x + '%'"
+          [attr.y]="ann.y + '%'"
+          [attr.width]="ann.width + '%'"
+          [attr.height]="ann.height + '%'"
+          [attr.stroke]="ann.color"
+          [attr.stroke-width]="ann.strokeWidth || 2"
+          [attr.opacity]="ann.opacity || 1"
+          fill="transparent"
+          (click)="onSelectAnnotation(ann, $event)"
+          class="cursor-pointer" />
+
+        <!-- Circle Shape -->
+        <ellipse 
+          *ngIf="ann.type === 'circle'"
+          [attr.cx]="(ann.x + ann.width / 2) + '%'"
+          [attr.cy]="(ann.y + ann.height / 2) + '%'"
+          [attr.rx]="(ann.width / 2) + '%'"
+          [attr.ry]="(ann.height / 2) + '%'"
+          [attr.stroke]="ann.color"
+          [attr.stroke-width]="ann.strokeWidth || 2"
+          [attr.opacity]="ann.opacity || 1"
+          fill="transparent"
+          (click)="onSelectAnnotation(ann, $event)"
+          class="cursor-pointer" />
+
+        <!-- Redaction Blackout Box -->
+        <rect 
+          *ngIf="ann.type === 'redact'"
+          [attr.x]="ann.x + '%'"
+          [attr.y]="ann.y + '%'"
+          [attr.width]="ann.width + '%'"
+          [attr.height]="ann.height + '%'"
+          fill="#000000"
+          [attr.opacity]="1"
+          (click)="onSelectAnnotation(ann, $event)"
+          class="cursor-pointer" />
+      </ng-container>
+    </svg>
+
+    <!-- DOM Interactive Elements (Text, Signatures, Watermarks, Selection Boxes) -->
+    <div class="absolute inset-0 pointer-events-none">
+      <ng-container *ngFor="let ann of activeAnnotations$ | async">
+        
+        <!-- Editable Text Box -->
+        <div 
+          *ngIf="ann.type === 'text'"
+          class="absolute pointer-events-auto group"
+          [style.left.%]="ann.x"
+          [style.top.%]="ann.y"
+          [style.color]="ann.color"
+          [style.font-size.px]="ann.fontSize || 14"
+          [style.font-family]="ann.fontFamily || 'Helvetica'"
+          [style.opacity]="ann.opacity || 1"
+          (click)="onSelectAnnotation(ann, $event)">
+          
+          <input 
+            type="text"
+            [value]="ann.text || ''"
+            (input)="onTextChange(ann, $any($event.target).value)"
+            class="bg-transparent border border-transparent hover:border-indigo-400 focus:border-indigo-600 focus:bg-white/80 dark:focus:bg-slate-900/80 rounded px-1.5 py-0.5 outline-none font-medium shadow-none transition-all"
+            [style.color]="ann.color" />
+        </div>
+
+        <!-- Watermark Overlay -->
+        <div 
+          *ngIf="ann.type === 'watermark'"
+          class="absolute pointer-events-auto select-none flex items-center justify-center"
+          [style.left.%]="ann.x"
+          [style.top.%]="ann.y"
+          [style.width.%]="ann.width"
+          [style.height.%]="ann.height"
+          [style.transform]="'rotate(' + (ann.rotation || 45) + 'deg)'"
+          [style.opacity]="ann.opacity || 0.2"
+          (click)="onSelectAnnotation(ann, $event)">
+          <span 
+            class="font-black tracking-widest uppercase border-4 border-current px-6 py-2 rounded-xl text-center"
+            [style.color]="ann.color"
+            [style.font-size.px]="ann.fontSize || 36">
+            {{ ann.text || 'CONFIDENTIAL' }}
+          </span>
+        </div>
+
+        <!-- Signature Image -->
+        <div 
+          *ngIf="ann.type === 'signature' && ann.dataUrl"
+          class="absolute pointer-events-auto group cursor-move"
+          [style.left.%]="ann.x"
+          [style.top.%]="ann.y"
+          [style.width.%]="ann.width"
+          [style.height.%]="ann.height"
+          (click)="onSelectAnnotation(ann, $event)">
+          <img 
+            [src]="ann.dataUrl" 
+            alt="Signature"
+            class="w-full h-full object-contain pointer-events-none" />
+        </div>
+
+        <!-- Selection Bounding Box Indicator -->
+        <div 
+          *ngIf="(selectedAnnotation$ | async)?.id === ann.id && ann.type !== 'draw' && ann.type !== 'highlight'"
+          class="absolute pointer-events-none border-2 border-indigo-500 rounded-sm"
+          [style.left.%]="ann.x"
+          [style.top.%]="ann.y"
+          [style.width.%]="ann.width"
+          [style.height.%]="ann.height">
+          <!-- 4 Corner Handles -->
+          <div class="absolute -top-1 -left-1 w-2.5 h-2.5 bg-white border-2 border-indigo-600 rounded-full"></div>
+          <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-white border-2 border-indigo-600 rounded-full"></div>
+          <div class="absolute -bottom-1 -left-1 w-2.5 h-2.5 bg-white border-2 border-indigo-600 rounded-full"></div>
+          <div class="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-white border-2 border-indigo-600 rounded-full"></div>
+        </div>
+
+      </ng-container>
+    </div>
+  </div>
+</div>

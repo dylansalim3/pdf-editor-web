@@ -1,10 +1,9 @@
-/* Sidebar Styles */
 :host {
   display: block;
 }
 
 aside {
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 1px 0 10px rgba(15, 23, 42, 0.04);
 }
 
 /* Active link indicator */
@@ -19,32 +18,10 @@ aside {
   top: 50%;
   transform: translateY(-50%);
   width: 3px;
-  height: 20px;
-  background-color: #2563eb;
-  border-radius: 0 2px 2px 0;
-}
-
-/* Scrollbar styling */
-.scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
-}
-
-.scrollbar-thin::-webkit-scrollbar {
-  width: 4px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.15);
-  border-radius: 2px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.25);
+  height: 18px;
+  background: linear-gradient(to bottom, #6366f1, #4f46e5);
+  border-radius: 0 4px 4px 0;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
 }
 
 /* Mobile responsive */
@@ -62,5 +39,6 @@ aside {
 aside,
 .sidebar-link,
 .sidebar-link span {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
+

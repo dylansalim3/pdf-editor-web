@@ -1,1 +1,202 @@
-<p>sign works!</p>
+<div class="max-w-5xl mx-auto py-6 sm:py-8 space-y-6">
+  <!-- Page Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200/80 dark:border-slate-800/80">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-xs">
+        <i nz-icon nzType="edit" class="text-xl"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight font-display">Sign PDF Document</h1>
+        <p class="text-xs text-slate-400">Draw, type, or upload your electronic signature and stamp directly onto PDF pages</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload Card -->
+  <div class="card p-6 shadow-sm" *ngIf="!originalBuffer && !loading">
+    <nz-upload
+      nzType="drag"
+      [nzMultiple]="false"
+      [nzBeforeUpload]="beforeUpload"
+      [(nzFileList)]="fileList"
+      [nzShowUploadList]="false"
+      class="w-full block">
+      <div class="py-10 flex flex-col items-center justify-center space-y-3">
+        <div class="w-16 h-16 rounded-3xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-md shadow-indigo-500/10">
+          <i nz-icon nzType="file-pdf" class="text-3xl"></i>
+        </div>
+        <div class="text-center space-y-1">
+          <p class="text-sm font-bold text-slate-800 dark:text-slate-200">Drop PDF here or click to open</p>
+          <p class="text-xs text-slate-400">Your documents never leave your browser</p>
+        </div>
+      </div>
+    </nz-upload>
+  </div>
+
+  <!-- Main Signer Workspace -->
+  <div *ngIf="originalBuffer" class="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fade-in">
+    <!-- Left Column: Signature Creation Studio -->
+    <div class="lg:col-span-6 space-y-5">
+      <div class="card p-5 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">1. Signature Design</h3>
+          <div class="flex items-center space-x-1">
+            <button 
+              (click)="signatureMode = 'draw'" 
+              class="px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors"
+              [class.bg-indigo-600]="signatureMode === 'draw'"
+              [class.text-white]="signatureMode === 'draw'"
+              [class.text-slate-500]="signatureMode !== 'draw'">
+              Draw
+            </button>
+            <button 
+              (click)="signatureMode = 'type'" 
+              class="px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors"
+              [class.bg-indigo-600]="signatureMode === 'type'"
+              [class.text-white]="signatureMode === 'type'"
+              [class.text-slate-500]="signatureMode !== 'type'">
+              Type
+            </button>
+            <button 
+              (click)="signatureMode = 'upload'" 
+              class="px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors"
+              [class.bg-indigo-600]="signatureMode === 'upload'"
+              [class.text-white]="signatureMode === 'upload'"
+              [class.text-slate-500]="signatureMode !== 'upload'">
+              Upload
+            </button>
+          </div>
+        </div>
+
+        <!-- Mode A: Freehand Draw Canvas -->
+        <div *ngIf="signatureMode === 'draw'" class="space-y-3">
+          <div class="relative w-full aspect-[2/1] rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden shadow-inner flex items-center justify-center">
+            <canvas 
+              #sigCanvas
+              width="450"
+              height="225"
+              (mousedown)="startDrawing($event)"
+              (mousemove)="draw($event)"
+              (mouseup)="stopDrawing()"
+              (mouseleave)="stopDrawing()"
+              (touchstart)="startDrawing($event)"
+              (touchmove)="draw($event)"
+              (touchend)="stopDrawing()"
+              class="w-full h-full cursor-crosshair touch-none">
+            </canvas>
+
+            <span class="absolute bottom-2 left-3 text-[10px] text-slate-300 dark:text-slate-600 pointer-events-none font-mono">
+              Sign above the line
+            </span>
+            <div class="absolute bottom-6 left-3 right-3 h-px bg-slate-200 dark:bg-slate-800 pointer-events-none"></div>
+          </div>
+
+          <!-- Color Swatches & Pen controls -->
+          <div class="flex items-center justify-between pt-1">
+            <div class="flex items-center space-x-2">
+              <span class="text-[11px] text-slate-500">Ink Color:</span>
+              <button (click)="penColor = '#000000'" class="w-5 h-5 rounded-full bg-black border-2" [class.ring-2]="penColor === '#000000'" [class.ring-indigo-500]="penColor === '#000000'"></button>
+              <button (click)="penColor = '#1e3a8a'" class="w-5 h-5 rounded-full bg-blue-900 border-2" [class.ring-2]="penColor === '#1e3a8a'" [class.ring-indigo-500]="penColor === '#1e3a8a'"></button>
+              <button (click)="penColor = '#2563eb'" class="w-5 h-5 rounded-full bg-blue-600 border-2" [class.ring-2]="penColor === '#2563eb'" [class.ring-indigo-500]="penColor === '#2563eb'"></button>
+            </div>
+
+            <button (click)="clearCanvas()" class="btn-secondary px-2.5 py-1 text-xs">
+              <i nz-icon nzType="clear" class="mr-1"></i> Clear Pad
+            </button>
+          </div>
+        </div>
+
+        <!-- Mode B: Type Signature -->
+        <div *ngIf="signatureMode === 'type'" class="space-y-3">
+          <div>
+            <label class="form-label text-xs">Type your full legal name</label>
+            <input type="text" [(ngModel)]="typedName" placeholder="e.g. Dylan Lim" class="form-input text-sm py-2 font-medium" />
+          </div>
+
+          <!-- Live Preview -->
+          <div class="p-6 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-center min-h-[100px] flex items-center justify-center">
+            <span class="text-3xl italic text-slate-900 dark:text-white" style="font-family: 'Brush Script MT', 'Caveat', cursive;">
+              {{ typedName || 'Your Signature Here' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Mode C: Upload Image -->
+        <div *ngIf="signatureMode === 'upload'" class="space-y-3">
+          <label class="form-label text-xs">Upload transparent PNG / JPEG</label>
+          <input type="file" accept="image/png, image/jpeg" (change)="onSignatureImageUpload($event)" class="form-input text-xs py-2" />
+          <div *ngIf="uploadedSigDataUrl" class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center max-h-32 overflow-hidden">
+            <img [src]="uploadedSigDataUrl" alt="Uploaded signature" class="max-h-24 object-contain" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Placement & Target Setup -->
+    <div class="lg:col-span-6 space-y-5">
+      <div class="card p-5 shadow-sm space-y-4">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">2. Placement & Stamping</h3>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="form-label text-xs">Target Page</label>
+            <nz-select [(ngModel)]="targetPage" class="w-full text-xs">
+              <nz-option [nzValue]="0" nzLabel="All Pages"></nz-option>
+              <nz-option *ngFor="let p of [].constructor(totalPages); let i = index" [nzValue]="i + 1" [nzLabel]="'Page ' + (i + 1)"></nz-option>
+            </nz-select>
+          </div>
+
+          <div>
+            <label class="form-label text-xs">Placement Corner</label>
+            <nz-select [(ngModel)]="positionPreset" class="w-full text-xs">
+              <nz-option nzValue="bottom-right" nzLabel="Bottom Right (Standard)"></nz-option>
+              <nz-option nzValue="bottom-left" nzLabel="Bottom Left"></nz-option>
+              <nz-option nzValue="bottom-center" nzLabel="Bottom Center"></nz-option>
+              <nz-option nzValue="top-right" nzLabel="Top Right"></nz-option>
+            </nz-select>
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label text-xs">Signature Scale</label>
+          <nz-radio-group [(ngModel)]="signatureScale" class="grid grid-cols-3 gap-2">
+            <label nz-radio-button [nzValue]="0.8" class="text-center text-xs">Small</label>
+            <label nz-radio-button [nzValue]="1.0" class="text-center text-xs">Medium (1.0x)</label>
+            <label nz-radio-button [nzValue]="1.3" class="text-center text-xs">Large (1.3x)</label>
+          </nz-radio-group>
+        </div>
+
+        <button 
+          (click)="applySignature()" 
+          [disabled]="signing"
+          class="btn-glow w-full py-3 text-xs font-bold shadow-md mt-4">
+          <i nz-icon nzType="check-circle" class="mr-1.5"></i>
+          {{ signing ? 'Embedding Signature...' : 'Stamp Signature onto PDF' }}
+        </button>
+      </div>
+
+      <!-- Result / Download Card -->
+      <div *ngIf="signedBlobUrl" class="card p-5 shadow-md border-emerald-500/30 bg-emerald-50/30 dark:bg-emerald-950/20 space-y-3 animate-fade-in">
+        <div class="flex items-center space-x-2">
+          <div class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-300 flex items-center justify-center">
+            <i nz-icon nzType="check" class="text-sm"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-slate-900 dark:text-white">Document Signed Successfully</h4>
+            <p class="text-[10px] text-slate-400 font-mono">Stamped onto {{ targetPage === 0 ? 'all pages' : 'page ' + targetPage }}</p>
+          </div>
+        </div>
+
+        <div class="flex gap-2 pt-1">
+          <button (click)="download()" class="btn-glow flex-1 py-2 text-xs font-bold">
+            <i nz-icon nzType="download" class="mr-1"></i> Download Signed PDF
+          </button>
+          <button (click)="openInEditor()" class="btn-secondary flex-1 py-2 text-xs font-semibold">
+            <i nz-icon nzType="edit" class="mr-1"></i> Open in Editor
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

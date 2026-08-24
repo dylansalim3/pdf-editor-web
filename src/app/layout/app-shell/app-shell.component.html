@@ -1,4 +1,4 @@
-<div [class.dark]="darkMode" class="min-h-screen transition-colors duration-300" [ngClass]="darkMode ? 'bg-gray-900 text-white' : 'bg-secondary-50 text-gray-900'">
+<div [class.dark]="darkMode" class="min-h-screen transition-colors duration-200" [ngClass]="darkMode ? 'bg-[#0B0F19] text-slate-100' : 'bg-slate-50 text-slate-900'">
   <div class="flex h-screen overflow-hidden">
     <!-- Sidebar -->
     <app-sidebar 
@@ -7,95 +7,127 @@
     </app-sidebar>
 
     <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col min-w-0 transition-all duration-300" [class.ml-64]="!sidebarCollapsed" [class.ml-16]="sidebarCollapsed">
-      <!-- Top Navigation -->
-      <header class="border-b sticky top-0 z-30 transition-colors duration-300" [ngClass]="darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-secondary-200'">
-        <div class="flex items-center justify-between px-4 py-3">
-          <!-- Left: Toggle & Breadcrumb -->
+    <div class="flex-1 flex flex-col min-w-0 transition-all duration-300" [class.ml-64]="!sidebarCollapsed" [class.ml-20]="sidebarCollapsed">
+      <!-- Top Glass Navigation -->
+      <header class="sticky top-0 z-30 backdrop-blur-md transition-colors duration-200 border-b"
+        [ngClass]="darkMode ? 'bg-slate-900/85 border-slate-800/80' : 'bg-white/85 border-slate-200/80'">
+        <div class="flex items-center justify-between px-6 py-3.5">
+          <!-- Left: Mobile Toggle & Breadcrumb -->
           <div class="flex items-center space-x-4">
             <button 
               (click)="toggleSidebar()"
-              class="btn-icon lg:hidden transition-colors duration-200" [ngClass]="darkMode ? 'text-gray-300 hover:text-white' : 'text-secondary-500 hover:text-secondary-700'">
+              class="btn-icon lg:hidden"
+              [ngClass]="darkMode ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'">
               <i nz-icon nzType="menu" nzTheme="outline" class="text-xl"></i>
             </button>
             
-            <!-- Breadcrumb -->
-            <nav class="hidden md:flex items-center space-x-2 text-sm">
+            <!-- Breadcrumb Navigation -->
+            <nav class="hidden md:flex items-center space-x-1.5 text-xs font-medium">
               <ng-container *ngFor="let breadcrumb of breadcrumbs; let last = last">
                 <a 
                   [routerLink]="breadcrumb.url" 
-                  class="transition-colors duration-200"
-                  [ngClass]="darkMode ? (last ? 'text-white font-medium' : 'text-gray-400 hover:text-gray-200') : (last ? 'text-secondary-900 font-medium' : 'text-secondary-500 hover:text-secondary-700')">
+                  class="px-2.5 py-1 rounded-lg transition-colors duration-150"
+                  [ngClass]="last 
+                    ? (darkMode ? 'bg-slate-800 text-white font-semibold shadow-xs' : 'bg-slate-100 text-slate-900 font-semibold shadow-xs') 
+                    : (darkMode ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100/60')">
                   {{ breadcrumb.label }}
                 </a>
-                <span *ngIf="!last" [ngClass]="darkMode ? 'text-gray-600' : 'text-secondary-400'">/</span>
+                <span *ngIf="!last" class="text-slate-300 dark:text-slate-600 text-xs select-none">/</span>
               </ng-container>
             </nav>
           </div>
 
-          <!-- Middle: Universal Search -->
-          <div class="hidden md:flex mx-4 flex-1 max-w-md">
-            <div class="relative w-full">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                <i nz-icon nzType="search" nzTheme="outline"></i>
+          <!-- Middle: Universal Quick Search -->
+          <div class="hidden md:flex mx-6 flex-1 max-w-md">
+            <div class="relative w-full group">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+                <i nz-icon nzType="search" nzTheme="outline" class="text-base"></i>
               </span>
-              <input type="text" placeholder="Search tasks, files, tools..." 
-                class="w-full pl-10 pr-4 py-2 border rounded-full text-sm focus:outline-none transition-colors duration-200"
-                [ngClass]="darkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-primary-500' : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-primary-500 bg-white'" />
+              <input 
+                type="text" 
+                placeholder="Search tools, actions (Rotate, Merge, Convert...)" 
+                class="w-full pl-10 pr-12 py-2 text-xs font-medium border rounded-xl focus:outline-none transition-all duration-200 shadow-xs"
+                [ngClass]="darkMode 
+                  ? 'bg-slate-800/70 border-slate-700/80 text-white placeholder-slate-500 focus:bg-slate-800 focus:border-indigo-500/80 focus:ring-2 focus:ring-indigo-500/20' 
+                  : 'bg-slate-100/70 border-slate-200/80 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20'" />
+              <kbd class="absolute right-3 top-2 pointer-events-none hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono font-semibold rounded bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border border-slate-300 dark:border-slate-600">
+                ⌘K
+              </kbd>
             </div>
           </div>
 
           <!-- Right: Actions -->
-          <div class="flex items-center space-x-3">
+          <div class="flex items-center space-x-2.5">
             <!-- Upload Button -->
             <a 
-              routerLink="/upload"
-              class="btn-primary hidden sm:inline-flex">
-              <i nz-icon nzType="upload" nzTheme="outline" class="mr-2"></i>
-              Upload PDF
+              routerLink="/pdf-rotate/editor"
+              class="btn-glow hidden sm:inline-flex px-3.5 py-1.5 text-xs font-semibold rounded-xl">
+              <i nz-icon nzType="file-pdf" nzTheme="outline" class="mr-1.5 text-sm"></i>
+              Studio Editor
             </a>
             
-            <!-- Dark Mode Toggle -->
-            <button (click)="toggleDarkMode()" class="btn-icon transition-colors duration-200" [ngClass]="darkMode ? 'text-yellow-400 hover:text-yellow-300' : 'text-gray-500 hover:text-gray-700'">
-              <i nz-icon [nzType]="darkMode ? 'sun' : 'moon'" nzTheme="outline" class="text-xl"></i>
+            <!-- Dark Mode Toggle Button -->
+            <button 
+              (click)="toggleDarkMode()" 
+              class="btn-icon text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              [title]="darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+              <i nz-icon [nzType]="darkMode ? 'sun' : 'moon'" nzTheme="outline" class="text-lg"></i>
             </button>
 
-            <!-- User Preferences / Settings -->
-            <button (click)="togglePreferences()" class="btn-icon transition-colors duration-200" [ngClass]="darkMode ? 'text-gray-300 hover:text-white' : 'text-secondary-500 hover:text-secondary-700'">
-              <i nz-icon nzType="setting" nzTheme="outline" class="text-xl"></i>
+            <!-- User Preferences Toggle -->
+            <button 
+              (click)="togglePreferences()" 
+              class="btn-icon text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              title="Preferences">
+              <i nz-icon nzType="setting" nzTheme="outline" class="text-lg"></i>
             </button>
 
-            <!-- Help Button -->
-            <button class="btn-icon transition-colors duration-200" [ngClass]="darkMode ? 'text-gray-300 hover:text-white' : 'text-secondary-500 hover:text-secondary-700'">
-              <i nz-icon nzType="question-circle" nzTheme="outline" class="text-xl"></i>
-            </button>
+            <!-- Documentation / Help Button -->
+            <a 
+              routerLink="/stitch"
+              class="btn-icon text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              title="Workflows & Tools">
+              <i nz-icon nzType="appstore" nzTheme="outline" class="text-lg"></i>
+            </a>
           </div>
         </div>
       </header>
 
-      <!-- Preferences Dropdown/Panel -->
-      <div *ngIf="showPreferences" class="absolute right-4 top-16 w-64 rounded-lg shadow-lg border p-4 z-50 transition-colors duration-200" [ngClass]="darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'">
-        <h3 class="font-bold mb-3 border-b pb-2" [ngClass]="darkMode ? 'text-white border-gray-700' : 'text-gray-900 border-gray-200'">User Preferences</h3>
-        <div class="flex flex-col space-y-3 pt-2">
-          <label class="flex justify-between items-center text-sm cursor-pointer" [ngClass]="darkMode ? 'text-gray-300' : 'text-gray-700'">
-            <span>High Contrast Mode</span>
-            <input type="checkbox" class="form-checkbox h-4 w-4 text-primary-600 rounded">
+      <!-- Preferences Dropdown Panel -->
+      <div 
+        *ngIf="showPreferences" 
+        class="fixed right-6 top-16 w-72 rounded-2xl shadow-xl border p-5 z-50 backdrop-blur-xl animate-fade-in transition-all duration-200" 
+        [ngClass]="darkMode ? 'bg-slate-900/95 border-slate-800 text-white shadow-black/60' : 'bg-white/95 border-slate-200 text-slate-900 shadow-slate-200/60'">
+        <div class="flex items-center justify-between pb-3 border-b" [ngClass]="darkMode ? 'border-slate-800' : 'border-slate-100'">
+          <div class="flex items-center space-x-2">
+            <i nz-icon nzType="setting" nzTheme="outline" class="text-indigo-500"></i>
+            <h3 class="font-bold text-sm">Editor Preferences</h3>
+          </div>
+          <button (click)="showPreferences = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+            <i nz-icon nzType="close" nzTheme="outline" class="text-xs"></i>
+          </button>
+        </div>
+        <div class="flex flex-col space-y-4 pt-3.5">
+          <label class="flex justify-between items-center text-xs font-medium cursor-pointer">
+            <span>High Contrast Preview</span>
+            <input type="checkbox" class="h-4 w-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
           </label>
-          <label class="flex justify-between items-center text-sm cursor-pointer" [ngClass]="darkMode ? 'text-gray-300' : 'text-gray-700'">
-            <span>Auto-save changes</span>
-            <input type="checkbox" class="form-checkbox h-4 w-4 text-primary-600 rounded" checked>
+          <label class="flex justify-between items-center text-xs font-medium cursor-pointer">
+            <span>Auto-Save Operations</span>
+            <input type="checkbox" class="h-4 w-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" checked>
           </label>
-          <label class="flex justify-between items-center text-sm cursor-pointer" [ngClass]="darkMode ? 'text-gray-300' : 'text-gray-700'">
-            <span>Enable Analytics</span>
-            <input type="checkbox" class="form-checkbox h-4 w-4 text-primary-600 rounded" checked>
+          <label class="flex justify-between items-center text-xs font-medium cursor-pointer">
+            <span>Client-Side Security Sandbox</span>
+            <input type="checkbox" class="h-4 w-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" checked disabled>
           </label>
         </div>
       </div>
 
-      <!-- Main Content -->
-      <main class="flex-1 overflow-auto p-6 transition-colors duration-300" [ngClass]="darkMode ? 'bg-gray-900' : 'bg-secondary-50'">
+      <!-- Main Content Outlet -->
+      <main class="flex-1 overflow-auto transition-colors duration-200 scrollbar-thin" [ngClass]="isFullBleedPage ? 'p-0' : 'p-6 sm:p-8'">
         <router-outlet></router-outlet>
       </main>
     </div>
   </div>
 </div>
+

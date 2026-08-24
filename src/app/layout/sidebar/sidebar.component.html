@@ -1,31 +1,35 @@
 <aside 
-  class="fixed left-0 top-0 h-full bg-white border-r border-secondary-200 z-40 flex flex-col transition-all duration-300"
+  class="fixed left-0 top-0 h-full bg-white dark:bg-slate-900 border-r border-slate-200/80 dark:border-slate-800/80 z-40 flex flex-col transition-all duration-300 shadow-sm"
   [class.w-64]="!collapsed"
-  [class.w-16]="collapsed">
+  [class.w-20]="collapsed">
   
   <!-- Logo Area -->
-  <div class="h-16 flex items-center justify-center border-b border-secondary-200 px-4">
-    <a routerLink="/" class="flex items-center space-x-3 overflow-hidden">
-      <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
+  <div class="h-16 flex items-center justify-between border-b border-slate-100 dark:border-slate-800/80 px-4">
+    <a routerLink="/" class="flex items-center space-x-3 overflow-hidden group">
+      <div class="w-9 h-9 bg-gradient-to-tr from-indigo-600 via-indigo-500 to-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md shadow-indigo-500/25 group-hover:scale-105 transition-transform duration-200">
         <i nz-icon nzType="file-pdf" nzTheme="fill" class="text-white text-lg"></i>
       </div>
-      <span 
-        class="font-bold text-lg text-secondary-900 whitespace-nowrap transition-opacity duration-200"
+      <div 
+        class="flex flex-col whitespace-nowrap transition-all duration-200"
         [class.opacity-0]="collapsed"
         [class.w-0]="collapsed">
-        PDF Editor
-      </span>
+        <div class="flex items-center gap-1.5">
+          <span class="font-extrabold text-base tracking-tight text-slate-900 dark:text-white font-display">PDF Studio</span>
+          <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60 uppercase">PRO</span>
+        </div>
+        <span class="text-[11px] text-slate-400 font-medium">All-in-One Engine</span>
+      </div>
     </a>
   </div>
 
   <!-- Navigation -->
-  <nav class="flex-1 overflow-y-auto py-4 scrollbar-thin">
-    <div *ngFor="let category of navCategories; let last = last" [class.mb-6]="!last">
+  <nav class="flex-1 overflow-y-auto py-4 px-3 scrollbar-thin space-y-6">
+    <div *ngFor="let category of navCategories">
       <!-- Category Title -->
       <div 
         *ngIf="!collapsed"
-        class="px-4 mb-2">
-        <span class="text-xs font-semibold text-secondary-400 uppercase tracking-wider">
+        class="px-2 mb-2">
+        <span class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           {{ category.title }}
         </span>
       </div>
@@ -33,28 +37,29 @@
       <!-- Divider when collapsed -->
       <div 
         *ngIf="collapsed"
-        class="mx-3 mb-2 border-t border-secondary-200"></div>
+        class="mx-1 mb-2 border-t border-slate-200/60 dark:border-slate-800/60"></div>
 
       <!-- Navigation Items -->
-      <div class="space-y-1 px-2">
+      <div class="space-y-1">
         <a
           *ngFor="let item of category.items"
           [routerLink]="item.route"
           routerLinkActive="active"
-          class="sidebar-link"
+          [routerLinkActiveOptions]="{exact: item.route === '/'}"
+          class="sidebar-link group"
           [class.justify-center]="collapsed"
+          [class.px-2]="collapsed"
           [title]="collapsed ? item.label : ''">
-          <i nz-icon [nzType]="item.icon" nzTheme="outline" class="text-lg flex-shrink-0"></i>
+          <i nz-icon [nzType]="item.icon" nzTheme="outline" class="text-lg flex-shrink-0 text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"></i>
           <span 
-            class="ml-3 whitespace-nowrap transition-opacity duration-200"
+            class="ml-3 font-medium text-sm whitespace-nowrap transition-opacity duration-200 flex-1 truncate"
             [class.opacity-0]="collapsed"
-            [class.w-0]="collapsed"
             [class.hidden]="collapsed">
             {{ item.label }}
           </span>
           <span 
             *ngIf="item.badge && !collapsed"
-            class="ml-auto bg-primary-100 text-primary-700 text-xs font-medium px-2 py-0.5 rounded-full">
+            class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">
             {{ item.badge }}
           </span>
         </a>
@@ -62,17 +67,28 @@
     </div>
   </nav>
 
-  <!-- Collapse Toggle -->
-  <div class="border-t border-secondary-200 p-2">
+  <!-- Sidebar Footer / Privacy Badge -->
+  <div class="p-3 border-t border-slate-100 dark:border-slate-800/80 mt-auto space-y-2">
+    <div *ngIf="!collapsed" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-xs font-semibold text-slate-700 dark:text-slate-200">100% Client-Side</span>
+      </div>
+      <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Files never leave your browser</p>
+    </div>
+
+    <!-- Collapse Toggle Button -->
     <button
       (click)="onToggle()"
-      class="w-full flex items-center justify-center p-2 rounded-md text-secondary-500 hover:text-secondary-700 hover:bg-secondary-100 transition-colors duration-200">
+      class="w-full flex items-center justify-center p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-100 dark:hover:bg-slate-800 transition-colors duration-150"
+      [title]="collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'">
       <i 
         nz-icon 
         [nzType]="collapsed ? 'menu-unfold' : 'menu-fold'" 
         nzTheme="outline"
         class="text-lg">
       </i>
+      <span *ngIf="!collapsed" class="ml-2 text-xs font-medium">Collapse Menu</span>
     </button>
   </div>
 </aside>
@@ -81,5 +97,6 @@
 <div 
   *ngIf="!collapsed"
   (click)="onToggle()"
-  class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden">
+  class="fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-30 lg:hidden transition-opacity">
 </div>
+

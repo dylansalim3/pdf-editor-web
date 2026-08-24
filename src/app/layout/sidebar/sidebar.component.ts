@@ -5,6 +5,7 @@ interface NavItem {
   icon: string;
   route: string;
   badge?: string;
+  badgeColor?: string;
 }
 
 interface NavCategory {
@@ -23,46 +24,43 @@ export class SidebarComponent {
 
   navCategories: NavCategory[] = [
     {
-      title: 'Main',
+      title: 'Workspace',
       items: [
         { label: 'Dashboard', icon: 'dashboard', route: '/' },
-        { label: 'Bulk Uploads', icon: 'cloud-upload', route: '/stitch/bulk' },
-        { label: 'Smart Workspace', icon: 'layout', route: '/stitch/editor' },
-        { label: 'Upload PDF', icon: 'upload', route: '/upload' },
+        { label: 'Studio Editor', icon: 'file-pdf', route: '/pdf-rotate/editor', badge: 'PRO', badgeColor: 'indigo' },
+        { label: 'Upload PDF', icon: 'cloud-upload', route: '/upload' },
+        { label: 'Bulk Queue', icon: 'folder-open', route: '/stitch/bulk' },
       ]
     },
     {
-      title: 'Page Tools',
+      title: 'Page Suite',
       items: [
         { label: 'Rotate Pages', icon: 'rotate-right', route: '/tools/rotate' },
         { label: 'Delete Pages', icon: 'delete', route: '/tools/delete' },
         { label: 'Reorder Pages', icon: 'swap', route: '/tools/reorder' },
-        { label: 'Extract Pages', icon: 'file-excel', route: '/tools/extract' },
-      ]
-    },
-    {
-      title: 'Content Tools',
-      items: [
-        { label: 'Add Watermark', icon: 'copyright', route: '/tools/watermark' },
-        { label: 'Sign PDF', icon: 'edit', route: '/tools/sign' },
-        { label: 'Annotate', icon: 'highlight', route: '/tools/annotate' },
+        { label: 'Extract Pages', icon: 'export', route: '/tools/extract' },
+        { label: 'Insert Pages', icon: 'file-add', route: '/tools/insert' },
       ]
     },
     {
       title: 'Operations',
       items: [
-        { label: 'Merge PDFs', icon: 'merge-cells', route: '/tools/merge' },
+        { label: 'Merge PDFs', icon: 'merge-cells', route: '/tools/merge', badge: 'POPULAR' },
         { label: 'Split PDF', icon: 'scissor', route: '/tools/split' },
-        { label: 'Compress', icon: 'compress', route: '/tools/compress' },
-        { label: 'Protect', icon: 'lock', route: '/tools/protect' },
+        { label: 'Compress PDF', icon: 'compress', route: '/tools/compress' },
+        { label: 'Protect & Lock', icon: 'lock', route: '/tools/protect' },
+        { label: 'Add Watermark', icon: 'copyright', route: '/tools/watermark' },
+        { label: 'Sign & Annotate', icon: 'form', route: '/tools/sign' },
       ]
     },
     {
-      title: 'Convert',
+      title: 'Conversion Suite',
       items: [
         { label: 'Word to PDF', icon: 'file-word', route: '/convert/word-to-pdf' },
         { label: 'PDF to Word', icon: 'file-text', route: '/convert/pdf-to-word' },
-        { label: 'PDF to Text', icon: 'file-text', route: '/convert/pdf-to-text' },
+        { label: 'PDF to Text', icon: 'file-search', route: '/convert/pdf-to-text', badge: 'OCR' },
+        { label: 'Image to PDF', icon: 'file-image', route: '/convert/image-to-pdf' },
+        { label: 'PDF to Image', icon: 'picture', route: '/convert/pdf-to-image' },
       ]
     },
   ];
@@ -71,3 +69,4 @@ export class SidebarComponent {
     this.toggle.emit();
   }
 }
+

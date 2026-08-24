@@ -1,237 +1,232 @@
-<div class="responsive">
-    <div class="edit-col item-1">
-        <div class="editor-sidebar">
-            <!-- Header -->
-            <div class="sidebar-header">
-                <h3 nz-typography class="editor-title">PDF Editor</h3>
-                <div class="undo-redo-group">
-                    <button nz-button nzType="primary" nzGhost (click)="onUndoChanges()" nzSize="small">
-                        <i nz-icon nzType="undo" nzTheme="outline"></i> 
-                        <span class="btn-text">Undo</span>
-                    </button>
-                    <button nz-button nzType="primary" (click)="onRedoChanges()" nzSize="small">
-                        <i nz-icon nzType="redo" nzTheme="outline"></i>
-                        <span class="btn-text">Redo</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Controls Section -->
-            <div class="controls-section">
-                <!-- Rotate Section -->
-                <div class="control-group">
-                    <h4 nz-typography class="group-title">
-                        <i nz-icon nzType="rotate-right" nzTheme="outline"></i> Rotate Pages
-                    </h4>
-                    <div class="control-row flex-wrap">
-                        <div class="rotate-buttons">
-                            <button nz-button nzType="primary" nzGhost (click)="onRotateLeft()" title="Rotate Left">
-                                <i nz-icon nzType="rotate-left" nzTheme="outline"></i>
-                                <span class="btn-text">Left</span>
-                            </button>
-                            <button nz-button nzType="primary" (click)="onRotateRight()" title="Rotate Right">
-                                <i nz-icon nzType="rotate-right" nzTheme="outline"></i>
-                                <span class="btn-text">Right</span>
-                            </button>
-                        </div>
-                        <div class="page-input-group">
-                            <span class="input-label">Page:</span>
-                            <nz-input-number 
-                                [(ngModel)]="currentPage" 
-                                [nzMin]="1"
-                                [nzMax]="maxPage"
-                                [nzDisabled]="!isCustomRotatePage"
-                                nzSize="small">
-                            </nz-input-number>
-                            <label nz-checkbox [(ngModel)]="isCustomRotatePage" class="checkbox-label">
-                                <span class="checkbox-text">Custom</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Move Pages Section -->
-                <div class="control-group">
-                    <h4 nz-typography class="group-title">
-                        <i nz-icon nzType="swap" nzTheme="outline"></i> Move Pages
-                    </h4>
-                    <div class="control-row">
-                        <span class="input-label">From:</span>
-                        <nz-input-number 
-                            [(ngModel)]="startPage" 
-                            [nzMin]="1"
-                            [nzMax]="maxPage"
-                            nzSize="small">
-                        </nz-input-number>
-                        <span class="input-label">To:</span>
-                        <nz-input-number
-                            [(ngModel)]="endPage" 
-                            [nzMin]="1" 
-                            [nzMax]="maxPage"
-                            nzSize="small">
-                        </nz-input-number>
-                        <button nz-button nzType="primary" (click)="onMovePages()" nzSize="small">
-                            <i nz-icon nzType="swap" nzTheme="outline"></i>
-                            <span class="btn-text">Move</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Delete Pages Section -->
-                <div class="control-group">
-                    <h4 nz-typography class="group-title">
-                        <i nz-icon nzType="delete" nzTheme="outline"></i> Delete Pages
-                    </h4>
-                    <div class="control-row flex-wrap">
-                        <div class="delete-inputs">
-                            <span class="input-label">From:</span>
-                            <nz-input-number 
-                                [(ngModel)]="removeStartPage" 
-                                [nzMin]="1"
-                                [nzMax]="maxPage"
-                                nzSize="small">
-                            </nz-input-number>
-                            <span *ngIf="!isDeleteOnePage" class="to-label">To:</span>
-                            <nz-input-number
-                                *ngIf="!isDeleteOnePage"
-                                [(ngModel)]="removeEndPage" 
-                                [nzMin]="1" 
-                                [nzMax]="maxPage"
-                                nzSize="small">
-                            </nz-input-number>
-                        </div>
-                        <div class="delete-actions">
-                            <label nz-checkbox [(ngModel)]="isDeleteOnePage" class="checkbox-label">
-                                <span class="checkbox-text">Single page</span>
-                            </label>
-                            <button nz-button nzType="primary" nzDanger (click)="onRemovePage(removeStartPage,removeEndPage)" nzSize="small">
-                                <i nz-icon nzType="delete" nzTheme="outline"></i>
-                                <span class="btn-text">Delete</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Watermark Section -->
-                <div class="control-group">
-                    <h4 nz-typography class="group-title">
-                        <i nz-icon nzType="copyright" nzTheme="outline"></i> Add Watermark
-                    </h4>
-                    <div class="watermark-controls">
-                        <nz-input-group [nzSuffix]="inputClearTpl" class="watermark-input">
-                            <input 
-                                type="text" 
-                                nz-input 
-                                [(ngModel)]="watermarkText" 
-                                placeholder="Enter watermark text"/>
-                        </nz-input-group>
-                        <ng-template #inputClearTpl>
-                            <i 
-                                nz-icon 
-                                class="ant-input-clear-icon" 
-                                nzTheme="fill" 
-                                nzType="close-circle"
-                                *ngIf="watermarkText"
-                                (click)="watermarkText = ''">
-                            </i>
-                        </ng-template>
-                        
-                        <div class="watermark-options">
-                            <div class="color-picker-group">
-                                <span class="input-label">Color:</span>
-                                <input type="color" [(ngModel)]="colorCode" class="color-input">
-                            </div>
-                            <div class="style-select-group">
-                                <span class="input-label">Style:</span>
-                                <nz-select [(ngModel)]="predefinedStyleSelectionIndex" nzSize="small" class="style-select">
-                                    <nz-option [nzValue]="0" nzLabel="Diagonal"></nz-option>
-                                    <nz-option [nzValue]="1" nzLabel="Reverse Diagonal"></nz-option>
-                                    <nz-option [nzValue]="2" nzLabel="Horizontal"></nz-option>
-                                </nz-select>
-                            </div>
-                        </div>
-                        
-                        <button 
-                            nz-button 
-                            nzType="primary" 
-                            (click)="onAddWatermark(watermarkText,colorCode,predefinedStyleSelectionIndex)"
-                            class="watermark-btn"
-                            [disabled]="!watermarkText">
-                            <i nz-icon nzType="plus" nzTheme="outline"></i>
-                            Add Watermark
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Merge PDF Section -->
-                <div class="control-group">
-                    <h4 nz-typography class="group-title">
-                        <i nz-icon nzType="merge-cells" nzTheme="outline"></i> Merge PDFs
-                    </h4>
-                    <div class="merge-controls">
-                        <nz-upload 
-                            nzType="drag" 
-                            [(nzFileList)]="mergeFileList" 
-                            nzAccept="application/pdf" 
-                            [nzBeforeUpload]="onBeforeUploadMerge"
-                            [nzMultiple]="true"
-                            [nzShowUploadList]="false"
-                            class="merge-upload">
-                            <p class="ant-upload-drag-icon">
-                                <i nz-icon nzType="file-add" nzTheme="outline"></i>
-                            </p>
-                            <p class="ant-upload-text">Add PDFs to merge</p>
-                            <p class="ant-upload-hint">Drag or click to add</p>
-                        </nz-upload>
-                        
-                        <div *ngIf="mergeFiles.length > 0" class="merge-file-list">
-                            <div *ngFor="let file of mergeFiles; let i = index" class="merge-file-item">
-                                <span class="file-name">{{ i + 1 }}. {{ file.name }}</span>
-                                <button nz-button nzType="text" nzDanger (click)="removeMergeFile(i)" nzSize="small">
-                                    <i nz-icon nzType="close" nzTheme="outline"></i>
-                                </button>
-                            </div>
-                            <button nz-button nzType="primary" (click)="onMergePDFs()" class="merge-btn">
-                                <i nz-icon nzType="merge-cells" nzTheme="outline"></i>
-                                Merge {{ mergeFiles.length }} PDF(s)
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Save Button -->
-            <div class="sidebar-footer">
-                <button nz-button nzType="primary" nzSize="large" (click)="onSavePDF()" class="save-btn">
-                    <i nz-icon nzType="download" nzTheme="outline"></i>
-                    Download PDF
-                </button>
-            </div>
+<div class="h-full flex flex-col md:flex-row overflow-hidden bg-slate-100 dark:bg-[#0B0F19]">
+  <!-- Left Controls Sidebar -->
+  <div class="w-full md:w-[380px] lg:w-[420px] bg-white dark:bg-slate-900 border-r border-slate-200/80 dark:border-slate-800/80 flex flex-col h-full flex-shrink-0 z-10 shadow-sm">
+    <!-- Header -->
+    <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-900 sticky top-0 z-20">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0">
+          <i nz-icon nzType="tool" nzTheme="outline" class="text-base"></i>
         </div>
+        <div>
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white leading-tight font-display">Editor Suite</h3>
+          <p class="text-[11px] text-slate-400 font-mono">Page {{ currentPage }} of {{ maxPage || '...' }}</p>
+        </div>
+      </div>
+
+      <!-- Undo / Redo Actions -->
+      <div class="flex items-center space-x-1">
+        <button 
+          (click)="onUndoChanges()" 
+          class="btn-icon p-1.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800" 
+          title="Undo (Ctrl+Z)">
+          <i nz-icon nzType="undo" nzTheme="outline"></i>
+        </button>
+        <button 
+          (click)="onRedoChanges()" 
+          class="btn-icon p-1.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800" 
+          title="Redo (Ctrl+Y)">
+          <i nz-icon nzType="redo" nzTheme="outline"></i>
+        </button>
+      </div>
     </div>
 
-    <!-- PDF Viewer -->
-    <div class="item-2">
-        <div *ngIf="!loading" class="pdf-viewer-container">
-            <ngx-extended-pdf-viewer 
-                [src]="src" 
-                height="100vh" 
-                [useBrowserLocale]="true" 
-                [showBookmarkButton]="false"
-                [showDownloadButton]="false" 
-                [showPrintButton]="false"
-                [showPropertiesButton]="false"
-                [showOpenFileButton]="false" 
-                [showHandToolButton]="false"
-                [showRotateButton]="false"
-                [textLayer]="true"
-                [showHandToolButton]="true"
-                (pagesLoaded)="onPageLoaded($event)"
-                (pageChange)="onCurrentPageChanged($event)">
-            </ngx-extended-pdf-viewer>
+    <!-- Controls Scrollable Body -->
+    <div class="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
+      <!-- Rotate Section -->
+      <div class="card p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+            <i nz-icon nzType="rotate-right" class="text-indigo-500"></i> Rotate Pages
+          </h4>
+          <span class="text-[10px] font-mono text-slate-400">90° Step</span>
         </div>
-        <div *ngIf="loading" class="loading-container">
-            <nz-spin nzTip="Processing PDF..."></nz-spin>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button (click)="onRotateLeft()" class="btn-secondary py-2 text-xs font-semibold flex items-center justify-center gap-1.5">
+            <i nz-icon nzType="rotate-left" nzTheme="outline"></i> Rotate Left
+          </button>
+          <button (click)="onRotateRight()" class="btn-primary py-2 text-xs font-semibold flex items-center justify-center gap-1.5">
+            <i nz-icon nzType="rotate-right" nzTheme="outline"></i> Rotate Right
+          </button>
         </div>
+
+        <div class="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800/60 text-xs">
+          <label nz-checkbox [(ngModel)]="isCustomRotatePage" class="text-xs text-slate-600 dark:text-slate-400">
+            <span class="text-xs font-medium">Target Specific Page</span>
+          </label>
+          <nz-input-number 
+            [(ngModel)]="currentPage" 
+            [nzMin]="1" 
+            [nzMax]="maxPage" 
+            [nzDisabled]="!isCustomRotatePage"
+            nzSize="small"
+            class="w-20">
+          </nz-input-number>
+        </div>
+      </div>
+
+      <!-- Move Pages Section -->
+      <div class="card p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+            <i nz-icon nzType="swap" class="text-amber-500"></i> Reorder Pages
+          </h4>
+        </div>
+
+        <div class="grid grid-cols-12 gap-2 items-center">
+          <div class="col-span-5 flex items-center gap-1.5">
+            <span class="text-[11px] font-medium text-slate-400">From:</span>
+            <nz-input-number [(ngModel)]="startPage" [nzMin]="1" [nzMax]="maxPage" nzSize="small" class="w-full"></nz-input-number>
+          </div>
+          <div class="col-span-2 flex justify-center text-slate-400">
+            <i nz-icon nzType="arrow-right" nzTheme="outline" class="text-xs"></i>
+          </div>
+          <div class="col-span-5 flex items-center gap-1.5">
+            <span class="text-[11px] font-medium text-slate-400">To:</span>
+            <nz-input-number [(ngModel)]="endPage" [nzMin]="1" [nzMax]="maxPage" nzSize="small" class="w-full"></nz-input-number>
+          </div>
+        </div>
+
+        <button (click)="onMovePages()" class="btn-secondary w-full py-2 text-xs font-semibold flex items-center justify-center gap-1.5">
+          <i nz-icon nzType="swap" nzTheme="outline"></i> Move Position
+        </button>
+      </div>
+
+      <!-- Delete Pages Section -->
+      <div class="card p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+            <i nz-icon nzType="delete" class="text-rose-500"></i> Delete Pages
+          </h4>
+          <label nz-checkbox [(ngModel)]="isDeleteOnePage" class="text-xs text-slate-600 dark:text-slate-400">
+            <span class="text-xs font-medium">Single page</span>
+          </label>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <div class="flex items-center gap-1.5 flex-1">
+            <span class="text-[11px] font-medium text-slate-400">From:</span>
+            <nz-input-number [(ngModel)]="removeStartPage" [nzMin]="1" [nzMax]="maxPage" nzSize="small" class="w-full"></nz-input-number>
+          </div>
+          <div *ngIf="!isDeleteOnePage" class="flex items-center gap-1.5 flex-1">
+            <span class="text-[11px] font-medium text-slate-400">To:</span>
+            <nz-input-number [(ngModel)]="removeEndPage" [nzMin]="1" [nzMax]="maxPage" nzSize="small" class="w-full"></nz-input-number>
+          </div>
+        </div>
+
+        <button (click)="onRemovePage(removeStartPage, removeEndPage)" class="btn-danger w-full py-2 text-xs font-semibold flex items-center justify-center gap-1.5">
+          <i nz-icon nzType="delete" nzTheme="outline"></i> Remove Selected Pages
+        </button>
+      </div>
+
+      <!-- Add Watermark Section -->
+      <div class="card p-4 space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+          <i nz-icon nzType="copyright" class="text-violet-500"></i> Add Watermark
+        </h4>
+
+        <div class="space-y-2.5">
+          <input 
+            type="text" 
+            [(ngModel)]="watermarkText" 
+            placeholder="e.g. CONFIDENTIAL, DRAFT" 
+            class="form-input text-xs py-1.5" />
+
+          <div class="grid grid-cols-2 gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-medium text-slate-400">Color:</span>
+              <input type="color" [(ngModel)]="colorCode" class="w-8 h-7 rounded border border-slate-200 cursor-pointer p-0">
+            </div>
+            <div class="flex items-center gap-1">
+              <nz-select [(ngModel)]="predefinedStyleSelectionIndex" nzSize="small" class="w-full text-xs">
+                <nz-option [nzValue]="0" nzLabel="Diagonal"></nz-option>
+                <nz-option [nzValue]="1" nzLabel="Reverse"></nz-option>
+                <nz-option [nzValue]="2" nzLabel="Horizontal"></nz-option>
+              </nz-select>
+            </div>
+          </div>
+
+          <button 
+            (click)="onAddWatermark(watermarkText, colorCode, predefinedStyleSelectionIndex)"
+            [disabled]="!watermarkText"
+            class="btn-primary w-full py-2 text-xs font-semibold flex items-center justify-center gap-1.5">
+            <i nz-icon nzType="plus" nzTheme="outline"></i> Apply Watermark
+          </button>
+        </div>
+      </div>
+
+      <!-- Merge PDFs Section -->
+      <div class="card p-4 space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+          <i nz-icon nzType="merge-cells" class="text-emerald-500"></i> Merge Additional PDFs
+        </h4>
+
+        <nz-upload 
+          nzType="drag" 
+          [(nzFileList)]="mergeFileList" 
+          nzAccept="application/pdf" 
+          [nzBeforeUpload]="onBeforeUploadMerge"
+          [nzMultiple]="true"
+          [nzShowUploadList]="false"
+          class="w-full block">
+          <div class="py-4 text-center">
+            <i nz-icon nzType="file-add" class="text-2xl text-indigo-500 mb-1"></i>
+            <p class="text-xs font-semibold text-slate-700 dark:text-slate-300">Click or drag PDF to queue</p>
+          </div>
+        </nz-upload>
+
+        <div *ngIf="mergeFiles.length > 0" class="space-y-2 pt-1">
+          <div *ngFor="let file of mergeFiles; let i = index" class="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800 text-xs">
+            <span class="truncate max-w-[200px] font-medium text-slate-700 dark:text-slate-200">{{ i + 1 }}. {{ file.name }}</span>
+            <button (click)="removeMergeFile(i)" class="text-slate-400 hover:text-rose-500 p-1">
+              <i nz-icon nzType="close" nzTheme="outline"></i>
+            </button>
+          </div>
+          <button (click)="onMergePDFs()" class="btn-primary w-full py-2 text-xs font-semibold flex items-center justify-center gap-1.5">
+            <i nz-icon nzType="merge-cells" nzTheme="outline"></i> Merge {{ mergeFiles.length }} Document(s)
+          </button>
+        </div>
+      </div>
     </div>
+
+    <!-- Sticky Footer with Download CTA -->
+    <div class="p-4 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 sticky bottom-0 z-20">
+      <button 
+        (click)="onSavePDF()" 
+        class="btn-glow w-full py-3 text-sm font-bold flex items-center justify-center gap-2 shadow-lg">
+        <i nz-icon nzType="download" nzTheme="outline" class="text-base"></i>
+        Export Modified PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Right PDF Viewer Canvas -->
+  <div class="flex-1 flex flex-col min-w-0 h-full relative overflow-hidden bg-slate-900">
+    <div *ngIf="!loading" class="w-full h-full">
+      <ngx-extended-pdf-viewer 
+        [src]="src" 
+        height="100%" 
+        [useBrowserLocale]="true" 
+        [showBookmarkButton]="false"
+        [showDownloadButton]="false" 
+        [showPrintButton]="true"
+        [showPropertiesButton]="false"
+        [showOpenFileButton]="false" 
+        [showHandToolButton]="true"
+        [showRotateButton]="false"
+        [textLayer]="true"
+        (pagesLoaded)="onPageLoaded($event)"
+        (pageChange)="onCurrentPageChanged($event)">
+      </ngx-extended-pdf-viewer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div *ngIf="loading" class="absolute inset-0 bg-slate-950/70 backdrop-blur-xs flex flex-col items-center justify-center z-30">
+      <div class="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 text-center shadow-2xl space-y-3">
+        <nz-spin nzSize="large"></nz-spin>
+        <p class="text-xs font-semibold text-slate-200">Processing PDF operations...</p>
+      </div>
+    </div>
+  </div>
 </div>
+

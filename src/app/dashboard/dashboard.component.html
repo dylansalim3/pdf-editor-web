@@ -1,131 +1,215 @@
-<div class="max-w-7xl mx-auto">
-  <!-- Page Header -->
-  <div class="page-header">
+<div class="max-w-7xl mx-auto space-y-10">
+  <!-- Hero Section with Interactive Drag & Drop Area -->
+  <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 via-slate-900 to-slate-950 p-8 sm:p-12 text-white border border-indigo-500/20 shadow-xl">
+    <!-- Ambient glowing shapes -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <!-- Left Column: Copy & Value Proposition -->
+      <div class="lg:col-span-7 space-y-6">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-semibold border border-indigo-400/30 backdrop-blur-md">
+          <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+          Privacy-First Architecture • 100% In-Browser
+        </div>
+        
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight text-white font-display">
+          Precision PDF Studio.<br/>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-blue-300 to-indigo-200">
+            Zero Upload Lag.
+          </span>
+        </h1>
+        
+        <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-xl font-normal">
+          Perform multiple rotations, deletions, merges, watermarks, and conversions in sequence without ever re-uploading or exposing your sensitive files.
+        </p>
+
+        <!-- Feature Stat Pills -->
+        <div class="flex flex-wrap gap-4 pt-2">
+          <div class="flex items-center gap-2 text-xs font-medium text-slate-300 bg-white/5 px-3 py-1.5 rounded-xl border border-white/10">
+            <i nz-icon nzType="safety-certificate" nzTheme="outline" class="text-emerald-400"></i>
+            Client-Side Sandbox
+          </div>
+          <div class="flex items-center gap-2 text-xs font-medium text-slate-300 bg-white/5 px-3 py-1.5 rounded-xl border border-white/10">
+            <i nz-icon nzType="thunderbolt" nzTheme="outline" class="text-amber-400"></i>
+            Instant Processing
+          </div>
+          <div class="flex items-center gap-2 text-xs font-medium text-slate-300 bg-white/5 px-3 py-1.5 rounded-xl border border-white/10">
+            <i nz-icon nzType="appstore" nzTheme="outline" class="text-indigo-400"></i>
+            16+ Built-in Tools
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Quick Upload Zone -->
+      <div class="lg:col-span-5">
+        <div 
+          (dragover)="onDragOver($event)"
+          (drop)="onFileDropped($event)"
+          routerLink="/upload"
+          class="group relative rounded-2xl bg-white/5 hover:bg-white/10 border-2 border-dashed border-indigo-400/40 hover:border-indigo-400 p-8 text-center cursor-pointer transition-all duration-300 backdrop-blur-md flex flex-col items-center justify-center min-h-[220px]">
+          <div class="w-16 h-16 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300 shadow-md">
+            <i nz-icon nzType="cloud-upload" nzTheme="outline" class="text-3xl"></i>
+          </div>
+          <h3 class="text-base font-bold text-white mb-1">Drop PDF here to begin</h3>
+          <p class="text-xs text-slate-400 mb-4">or click to open the Studio Workspace directly</p>
+          <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30 transition-colors">
+            <i nz-icon nzType="plus" nzTheme="outline"></i> Open PDF Studio
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Actions Grid -->
+  <section class="space-y-4">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="page-title">Dashboard</h1>
-        <p class="page-subtitle">Welcome back! Choose a tool to get started with your PDF editing.</p>
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Popular Quick Actions</h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Frequently used operations for rapid document adjustments</p>
       </div>
-      <a routerLink="/upload" class="btn-primary">
-        <i nz-icon nzType="upload" nzTheme="outline" class="mr-2"></i>
-        Upload PDF
+      <a routerLink="/upload" class="text-xs font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 flex items-center gap-1">
+        Open Studio Workspace <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
       </a>
     </div>
-  </div>
 
-  <!-- Quick Actions -->
-  <section class="mb-10">
-    <h2 class="text-lg font-semibold text-secondary-900 mb-4">Quick Actions</h2>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <a 
         *ngFor="let tool of quickActions"
         [routerLink]="tool.route"
-        class="card p-6 hover:shadow-lg transition-shadow duration-200 group">
-        <div class="flex flex-col items-center text-center">
+        class="card p-5 hover:shadow-card-hover hover:border-indigo-200 hover:-translate-y-1 transition-all duration-200 group relative dark:hover:border-indigo-500/30">
+        <div class="flex items-start justify-between mb-4">
           <div 
-            class="w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-transform duration-200 group-hover:scale-110"
-            [class.bg-blue-100]="tool.color === 'blue'"
-            [class.text-blue-600]="tool.color === 'blue'"
-            [class.bg-red-100]="tool.color === 'red'"
-            [class.text-red-600]="tool.color === 'red'"
-            [class.bg-purple-100]="tool.color === 'purple'"
-            [class.text-purple-600]="tool.color === 'purple'"
-            [class.bg-green-100]="tool.color === 'green'"
-            [class.text-green-600]="tool.color === 'green'">
+            class="w-12 h-12 rounded-2xl flex items-center justify-center transition-transform duration-200 group-hover:scale-105 shadow-sm"
+            [class.tool-icon-indigo]="tool.color === 'indigo'"
+            [class.tool-icon-rose]="tool.color === 'rose'"
+            [class.tool-icon-emerald]="tool.color === 'emerald'"
+            [class.tool-icon-violet]="tool.color === 'violet'">
             <i nz-icon [nzType]="tool.icon" nzTheme="outline" class="text-2xl"></i>
           </div>
-          <h3 class="font-medium text-secondary-900">{{ tool.name }}</h3>
-          <p class="text-xs text-secondary-500 mt-1">{{ tool.description }}</p>
+          <span 
+            *ngIf="tool.badge" 
+            class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase"
+            [class.bg-indigo-50]="tool.color === 'indigo'"
+            [class.text-indigo-700]="tool.color === 'indigo'"
+            [class.bg-emerald-50]="tool.color === 'emerald'"
+            [class.text-emerald-700]="tool.color === 'emerald'">
+            {{ tool.badge }}
+          </span>
         </div>
+        
+        <h3 class="font-bold text-slate-900 dark:text-white text-sm group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors flex items-center justify-between">
+          {{ tool.name }}
+          <i nz-icon nzType="arrow-right" nzTheme="outline" class="text-xs text-slate-400 group-hover:translate-x-1 group-hover:text-indigo-600 transition-all duration-200"></i>
+        </h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed line-clamp-2">{{ tool.description }}</p>
       </a>
     </div>
   </section>
 
-  <!-- Recent Files -->
-  <section class="mb-10" *ngIf="recentFiles.length > 0">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-semibold text-secondary-900">Recent Files</h2>
-      <a routerLink="/files" class="text-sm text-primary-600 hover:text-primary-700 font-medium">
-        View All
-      </a>
+  <!-- Complete Tools Directory with Search & Category Filters -->
+  <section class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
+      <div>
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Complete Tool Suite</h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Explore every editing and conversion module available</p>
+      </div>
+
+      <!-- Filter Tabs & Search Bar -->
+      <div class="flex flex-wrap items-center gap-2.5">
+        <div class="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60">
+          <button 
+            (click)="setFilter('all')" 
+            class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-all"
+            [ngClass]="activeFilter === 'all' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'">
+            All
+          </button>
+          <button 
+            (click)="setFilter('pages')" 
+            class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-all"
+            [ngClass]="activeFilter === 'pages' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'">
+            Page Suite
+          </button>
+          <button 
+            (click)="setFilter('operations')" 
+            class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-all"
+            [ngClass]="activeFilter === 'operations' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'">
+            Operations
+          </button>
+          <button 
+            (click)="setFilter('convert')" 
+            class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-all"
+            [ngClass]="activeFilter === 'convert' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'">
+            Convert
+          </button>
+        </div>
+
+        <div class="relative">
+          <input 
+            type="text" 
+            [(ngModel)]="searchQuery" 
+            placeholder="Filter tools..." 
+            class="pl-8 pr-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-slate-900 dark:text-white placeholder-slate-400 w-44" />
+          <i nz-icon nzType="search" nzTheme="outline" class="absolute left-2.5 top-2 text-slate-400 text-xs"></i>
+        </div>
+      </div>
     </div>
-    
-    <div class="card">
-      <div class="divide-y divide-secondary-200">
-        <div 
-          *ngFor="let file of recentFiles"
-          class="flex items-center justify-between px-6 py-4 hover:bg-secondary-50 transition-colors duration-200">
-          <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-              <i nz-icon nzType="file-pdf" nzTheme="fill" class="text-red-600 text-xl"></i>
+
+    <!-- Category Sections -->
+    <div class="space-y-8">
+      <div *ngFor="let category of filteredCategories" class="space-y-4">
+        <div class="flex items-center space-x-2">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{{ category.title }}</h3>
+          <div class="flex-1 h-px bg-slate-200/80 dark:bg-slate-800/80"></div>
+          <span class="text-xs font-mono font-medium text-slate-400">{{ category.tools.length }} tools</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <a
+            *ngFor="let tool of category.tools"
+            [routerLink]="tool.route"
+            class="card p-4 hover:shadow-card-hover hover:border-indigo-200 hover:-translate-y-0.5 transition-all duration-200 flex items-start space-x-3.5 group dark:hover:border-indigo-500/30">
+            <div 
+              class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-110 shadow-xs"
+              [class.tool-icon-indigo]="tool.color === 'indigo'"
+              [class.tool-icon-rose]="tool.color === 'rose'"
+              [class.tool-icon-emerald]="tool.color === 'emerald'"
+              [class.tool-icon-amber]="tool.color === 'amber'"
+              [class.tool-icon-sky]="tool.color === 'sky'"
+              [class.tool-icon-teal]="tool.color === 'teal'"
+              [class.tool-icon-cyan]="tool.color === 'cyan'"
+              [class.tool-icon-purple]="tool.color === 'purple'"
+              [class.tool-icon-violet]="tool.color === 'violet'"
+              [class.tool-icon-blue]="tool.color === 'blue'"
+              [class.tool-icon-pink]="tool.color === 'pink'"
+              [class.tool-icon-slate]="tool.color === 'slate'">
+              <i nz-icon [nzType]="tool.icon" nzTheme="outline" class="text-lg"></i>
             </div>
-            <div>
-              <p class="font-medium text-secondary-900">{{ file.name }}</p>
-              <p class="text-sm text-secondary-500">{{ file.modified }}</p>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-1.5">
+                <p class="font-bold text-xs text-slate-900 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{{ tool.name }}</p>
+                <span *ngIf="tool.badge" class="text-[9px] font-extrabold px-1 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50">{{ tool.badge }}</span>
+              </div>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{{ tool.description }}</p>
             </div>
-          </div>
-          <div class="flex items-center space-x-2">
-            <button class="btn-icon text-secondary-400 hover:text-secondary-600">
-              <i nz-icon nzType="edit" nzTheme="outline"></i>
-            </button>
-            <button class="btn-icon text-secondary-400 hover:text-danger-600">
-              <i nz-icon nzType="delete" nzTheme="outline"></i>
-            </button>
-          </div>
+            <i nz-icon nzType="right" nzTheme="outline" class="text-slate-300 dark:text-slate-600 text-xs opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all"></i>
+          </a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- All Tools -->
-  <section>
-    <h2 class="text-lg font-semibold text-secondary-900 mb-4">All Tools</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div *ngFor="let category of toolCategories" class="card">
-        <div class="card-header">
-          <h3 class="font-semibold text-secondary-900">{{ category.title }}</h3>
-        </div>
-        <div class="card-body py-2">
-          <div class="space-y-1">
-            <a
-              *ngFor="let tool of category.tools"
-              [routerLink]="tool.route"
-              class="flex items-center p-3 rounded-lg hover:bg-secondary-50 transition-colors duration-200 group">
-              <div 
-                class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
-                [class.bg-blue-100]="tool.color === 'blue'"
-                [class.text-blue-600]="tool.color === 'blue'"
-                [class.bg-red-100]="tool.color === 'red'"
-                [class.text-red-600]="tool.color === 'red'"
-                [class.bg-purple-100]="tool.color === 'purple'"
-                [class.text-purple-600]="tool.color === 'purple'"
-                [class.bg-green-100]="tool.color === 'green'"
-                [class.text-green-600]="tool.color === 'green'"
-                [class.bg-orange-100]="tool.color === 'orange'"
-                [class.text-orange-600]="tool.color === 'orange'"
-                [class.bg-cyan-100]="tool.color === 'cyan'"
-                [class.text-cyan-600]="tool.color === 'cyan'"
-                [class.bg-indigo-100]="tool.color === 'indigo'"
-                [class.text-indigo-600]="tool.color === 'indigo'"
-                [class.bg-pink-100]="tool.color === 'pink'"
-                [class.text-pink-600]="tool.color === 'pink'"
-                [class.bg-teal-100]="tool.color === 'teal'"
-                [class.text-teal-600]="tool.color === 'teal'"
-                [class.bg-yellow-100]="tool.color === 'yellow'"
-                [class.text-yellow-600]="tool.color === 'yellow'"
-                [class.bg-gray-100]="tool.color === 'gray'"
-                [class.text-gray-600]="tool.color === 'gray'">
-                <i nz-icon [nzType]="tool.icon" nzTheme="outline" class="text-lg"></i>
-              </div>
-              <div class="ml-3 flex-1 min-w-0">
-                <p class="font-medium text-secondary-900 truncate">{{ tool.name }}</p>
-                <p class="text-xs text-secondary-500 truncate">{{ tool.description }}</p>
-              </div>
-              <i nz-icon nzType="right" nzTheme="outline" class="text-secondary-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></i>
-            </a>
-          </div>
-        </div>
-      </div>
+  <!-- Workflow Banner -->
+  <section class="rounded-2xl p-6 sm:p-8 bg-slate-900 text-white border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
+    <div class="space-y-1 text-center md:text-left">
+      <h3 class="text-lg font-bold text-white tracking-tight">Need to batch process multiple documents?</h3>
+      <p class="text-xs text-slate-400 max-w-xl">Use our Bulk Uploads Queue to queue, reorder, and export entire lists of PDFs simultaneously.</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <a routerLink="/stitch/bulk" class="btn-primary px-4 py-2 text-xs font-semibold">
+        <i nz-icon nzType="folder-open" nzTheme="outline" class="mr-1.5"></i>
+        Open Bulk Queue
+      </a>
     </div>
   </section>
 </div>

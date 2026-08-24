@@ -1,0 +1,115 @@
+<header class="h-16 px-4 sm:px-6 flex items-center justify-between border-b transition-colors duration-200 z-30 select-none"
+  [ngClass]="darkMode ? 'bg-slate-900/90 border-slate-800 text-white backdrop-blur-md' : 'bg-white/90 border-slate-200 text-slate-900 backdrop-blur-md'">
+  
+  <!-- Left Section: Back, Brand & Doc Title -->
+  <div class="flex items-center space-x-4">
+    <a routerLink="/" class="p-2 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-slate-800 transition-colors" title="Back to Dashboard">
+      <i nz-icon nzType="arrow-left" nzTheme="outline" class="text-lg"></i>
+    </a>
+
+    <div class="flex items-center space-x-2.5 pr-3 border-r" [ngClass]="darkMode ? 'border-slate-800' : 'border-slate-200'">
+      <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+        <i nz-icon nzType="file-pdf" nzTheme="outline" class="text-lg"></i>
+      </div>
+      <span class="font-bold text-sm tracking-tight hidden md:inline">PDF Studio</span>
+    </div>
+
+    <!-- Document Name -->
+    <div class="flex items-center space-x-2">
+      <span class="text-xs sm:text-sm font-semibold max-w-[140px] sm:max-w-xs truncate" [title]="fileName$ | async">
+        {{ fileName$ | async }}
+      </span>
+      <span class="px-2 py-0.5 text-[10px] font-medium rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+        Live
+      </span>
+    </div>
+  </div>
+
+  <!-- Center Section: Undo/Redo & Zoom Controls -->
+  <div class="hidden lg:flex items-center space-x-1.5 p-1 rounded-2xl border"
+    [ngClass]="darkMode ? 'bg-slate-800/60 border-slate-700/60' : 'bg-slate-100/80 border-slate-200/80'">
+    
+    <!-- Undo Button -->
+    <button 
+      (click)="onUndo()"
+      [disabled]="!(canUndo$ | async)"
+      class="p-2 rounded-xl text-xs font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white dark:hover:bg-slate-700 shadow-xs"
+      title="Undo (Ctrl+Z)">
+      <i nz-icon nzType="undo" nzTheme="outline" class="text-sm"></i>
+    </button>
+
+    <!-- Redo Button -->
+    <button 
+      (click)="onRedo()"
+      [disabled]="!(canRedo$ | async)"
+      class="p-2 rounded-xl text-xs font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white dark:hover:bg-slate-700 shadow-xs"
+      title="Redo (Ctrl+Y)">
+      <i nz-icon nzType="redo" nzTheme="outline" class="text-sm"></i>
+    </button>
+
+    <div class="w-px h-4 mx-1" [ngClass]="darkMode ? 'bg-slate-700' : 'bg-slate-300'"></div>
+
+    <!-- Zoom Out -->
+    <button 
+      (click)="onZoomOut()"
+      class="p-2 rounded-xl text-xs font-medium transition-all hover:bg-white dark:hover:bg-slate-700 shadow-xs"
+      title="Zoom Out (-)">
+      <i nz-icon nzType="minus" nzTheme="outline" class="text-xs"></i>
+    </button>
+
+    <!-- Zoom Label / Reset -->
+    <button 
+      (click)="onResetZoom()"
+      class="px-2.5 py-1 rounded-xl text-xs font-mono font-semibold transition-all hover:bg-white dark:hover:bg-slate-700"
+      title="Reset Zoom to 100%">
+      {{ zoomLevel$ | async }}%
+    </button>
+
+    <!-- Zoom In -->
+    <button 
+      (click)="onZoomIn()"
+      class="p-2 rounded-xl text-xs font-medium transition-all hover:bg-white dark:hover:bg-slate-700 shadow-xs"
+      title="Zoom In (+)">
+      <i nz-icon nzType="plus" nzTheme="outline" class="text-xs"></i>
+    </button>
+  </div>
+
+  <!-- Right Section: Organize, ⌘K, Theme & Export -->
+  <div class="flex items-center space-x-2.5">
+    
+    <!-- Organize Pages Grid Button -->
+    <button 
+      (click)="onOpenOrganize()"
+      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400"
+      [ngClass]="darkMode ? 'bg-slate-800/80 border-slate-700 text-slate-200' : 'bg-slate-100/80 border-slate-200 text-slate-700'">
+      <i nz-icon nzType="appstore" nzTheme="outline" class="text-sm"></i>
+      <span class="hidden sm:inline">Organize Pages</span>
+    </button>
+
+    <!-- Command Palette Trigger -->
+    <button 
+      (click)="onOpenCommandPalette()"
+      class="hidden md:inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-xl border transition-all"
+      [ngClass]="darkMode ? 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-white' : 'bg-slate-100/70 border-slate-200 text-slate-500 hover:text-slate-900'">
+      <i nz-icon nzType="search" nzTheme="outline" class="text-xs"></i>
+      <span>Commands</span>
+      <kbd class="px-1.5 py-0.5 text-[10px] font-mono rounded bg-slate-200 dark:bg-slate-700 border border-slate-300 dark:border-slate-600">⌘K</kbd>
+    </button>
+
+    <!-- Dark Mode Toggle -->
+    <button 
+      (click)="toggleDark.emit()"
+      class="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+      [title]="darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+      <i nz-icon [nzType]="darkMode ? 'sun' : 'moon'" nzTheme="outline" class="text-base"></i>
+    </button>
+
+    <!-- Smart Export Button -->
+    <button 
+      (click)="onOpenExport()"
+      class="btn-primary px-4 py-2 text-xs font-bold rounded-xl shadow-md shadow-indigo-600/30 inline-flex items-center gap-2">
+      <i nz-icon nzType="download" nzTheme="outline" class="text-sm"></i>
+      <span>Export PDF</span>
+    </button>
+  </div>
+</header>

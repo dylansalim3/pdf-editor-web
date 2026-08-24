@@ -8,6 +8,8 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { NzMessageModule } from 'ng-zorro-antd/message';
+import { NzRadioModule } from 'ng-zorro-antd/radio';
 
 const routes: Routes = [
   {
@@ -26,7 +28,10 @@ const routes: Routes = [
     NzButtonModule,
     NzUploadModule,
     NzProgressModule,
-    NzCheckboxModule
+    NzCheckboxModule,
+    NzMessageModule,
+    NzRadioModule
   ]
 })
 export class CompressModule { }
+

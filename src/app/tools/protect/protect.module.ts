@@ -8,6 +8,8 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { NzMessageModule } from 'ng-zorro-antd/message';
+import { NzInputModule } from 'ng-zorro-antd/input';
 
 const routes: Routes = [
   {
@@ -26,7 +28,10 @@ const routes: Routes = [
     NzButtonModule,
     NzUploadModule,
     NzSelectModule,
-    NzCheckboxModule
+    NzCheckboxModule,
+    NzMessageModule,
+    NzInputModule
   ]
 })
 export class ProtectModule { }
+

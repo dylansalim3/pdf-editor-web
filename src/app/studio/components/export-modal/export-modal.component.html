@@ -1,0 +1,131 @@
+<div *ngIf="isOpen$ | async" 
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/75 backdrop-blur-md animate-fade-in select-none">
+  
+  <div class="relative w-full max-w-lg flex flex-col rounded-3xl border shadow-2xl overflow-hidden"
+    [ngClass]="darkMode ? 'bg-slate-900 border-slate-800 text-white shadow-black/60' : 'bg-white border-slate-200 text-slate-900 shadow-slate-300/60'">
+    
+    <!-- Modal Header -->
+    <div class="h-14 px-6 flex items-center justify-between border-b shrink-0"
+      [ngClass]="darkMode ? 'border-slate-800' : 'border-slate-100'">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+          <i nz-icon nzType="download" nzTheme="outline" class="text-base"></i>
+        </div>
+        <h2 class="text-sm font-bold tracking-tight">Export Document</h2>
+      </div>
+
+      <button 
+        (click)="onClose()"
+        class="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+        <i nz-icon nzType="close" nzTheme="outline" class="text-sm"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-6 space-y-5">
+      
+      <!-- File Name Input -->
+      <div class="space-y-1.5">
+        <label class="text-xs font-bold text-slate-600 dark:text-slate-400">Export File Name</label>
+        <input 
+          type="text" 
+          [(ngModel)]="customFileName"
+          placeholder="document.pdf"
+          class="w-full p-2.5 text-xs font-medium rounded-xl border bg-white dark:bg-slate-800 text-slate-900 dark:text-white border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
+      </div>
+
+      <!-- Export Presets Grid -->
+      <div class="space-y-2.5">
+        <label class="text-xs font-bold text-slate-600 dark:text-slate-400">Select Export Format</label>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          
+          <!-- Standard PDF -->
+          <div 
+            (click)="exportType = 'standard'"
+            class="p-3.5 rounded-2xl border cursor-pointer transition-all flex items-start space-x-3"
+            [ngClass]="exportType === 'standard' 
+              ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/50 ring-2 ring-indigo-500/20' 
+              : (darkMode ? 'border-slate-800 bg-slate-800/40 hover:border-slate-700' : 'border-slate-200 bg-white hover:border-slate-300')">
+            <div class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+              <i nz-icon nzType="file-pdf" nzTheme="outline" class="text-base"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold">Standard PDF</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">High quality vector preservation</p>
+            </div>
+          </div>
+
+          <!-- Compressed PDF -->
+          <div 
+            (click)="exportType = 'compressed'"
+            class="p-3.5 rounded-2xl border cursor-pointer transition-all flex items-start space-x-3"
+            [ngClass]="exportType === 'compressed' 
+              ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/50 ring-2 ring-indigo-500/20' 
+              : (darkMode ? 'border-slate-800 bg-slate-800/40 hover:border-slate-700' : 'border-slate-200 bg-white hover:border-slate-300')">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+              <i nz-icon nzType="compress" nzTheme="outline" class="text-base"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold">Compressed PDF</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">Optimized object stream size</p>
+            </div>
+          </div>
+
+          <!-- Flattened PDF -->
+          <div 
+            (click)="exportType = 'flattened'"
+            class="p-3.5 rounded-2xl border cursor-pointer transition-all flex items-start space-x-3"
+            [ngClass]="exportType === 'flattened' 
+              ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/50 ring-2 ring-indigo-500/20' 
+              : (darkMode ? 'border-slate-800 bg-slate-800/40 hover:border-slate-700' : 'border-slate-200 bg-white hover:border-slate-300')">
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+              <i nz-icon nzType="safety-certificate" nzTheme="outline" class="text-base"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold">Flattened PDF</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">Lock all annotations into pages</p>
+            </div>
+          </div>
+
+          <!-- Images PNG -->
+          <div 
+            (click)="exportType = 'images'"
+            class="p-3.5 rounded-2xl border cursor-pointer transition-all flex items-start space-x-3"
+            [ngClass]="exportType === 'images' 
+              ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/50 ring-2 ring-indigo-500/20' 
+              : (darkMode ? 'border-slate-800 bg-slate-800/40 hover:border-slate-700' : 'border-slate-200 bg-white hover:border-slate-300')">
+            <div class="w-8 h-8 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0">
+              <i nz-icon nzType="picture" nzTheme="outline" class="text-base"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold">Images (PNG)</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">Export current page image</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="h-16 px-6 flex items-center justify-end space-x-2.5 border-t shrink-0"
+      [ngClass]="darkMode ? 'border-slate-800 bg-slate-900/50' : 'border-slate-100 bg-slate-50/50'">
+      <button 
+        (click)="onClose()"
+        class="px-4 py-2 text-xs font-semibold rounded-xl text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+        Cancel
+      </button>
+
+      <button 
+        (click)="onExport()"
+        [disabled]="exporting"
+        class="btn-primary px-6 py-2.5 text-xs font-bold rounded-xl shadow-md shadow-indigo-600/30 flex items-center gap-2">
+        <i nz-icon [nzType]="exporting ? 'loading' : 'download'" nzTheme="outline"></i>
+        <span>{{ exporting ? 'Baking PDF...' : 'Download Document' }}</span>
+      </button>
+    </div>
+
+  </div>
+</div>

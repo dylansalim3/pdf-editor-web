@@ -1,36 +1,93 @@
-<div class="upload-container">
-  <div class="page-header text-center">
-    <h1 class="page-title">PDF Editor</h1>
-    <p class="page-subtitle">
-      Your one-stop PDF editing tool. Supports rotating pages, moving pages, deleting pages, adding watermarks, and merging PDFs.
+<div class="max-w-4xl mx-auto py-6 sm:py-10 space-y-8">
+  <!-- Page Header -->
+  <div class="text-center space-y-3">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-xs font-semibold border border-indigo-200/60 dark:border-indigo-800/60">
+      <i nz-icon nzType="safety-certificate" nzTheme="outline"></i>
+      100% Client-Side & Secure
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight font-display">
+      Upload PDF Document
+    </h1>
+    <p class="text-sm text-slate-500 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
+      Load your document directly into the editor. Rotate, reorder, delete, watermark, and merge with zero data uploaded to external servers.
     </p>
   </div>
 
-  <div class="upload-area p-4">
-    <nz-upload 
-      nzType="drag" 
-      [(nzFileList)]="fileList" 
-      nzAccept="application/pdf" 
-      [nzBeforeUpload]="onUploadFile"
-      class="responsive-upload">
-      <p class="ant-upload-drag-icon">
-        <i nz-icon nzType="inbox" class="upload-icon"></i>
-      </p>
-      <p class="ant-upload-text mobile-text">Click or drag PDF file here to upload</p>
-      <p class="ant-upload-hint mobile-hint">
-        Supports PDF files only
-      </p>
-    </nz-upload>
-  </div>
-  
-  <div class="flex flex-wrap justify-content-center pt-2 pb-4 button-container">
-    <nz-space nzSize="middle">
-      <button nz-button nzType="primary" (click)="onSubmitClick()" [disabled]="fileList.length<=0" class="action-btn">
-        <i nz-icon nzType="edit" nzTheme="outline"></i> Start Editing
+  <!-- Main Card with Dropzone -->
+  <div class="card p-6 sm:p-10 shadow-lg border border-slate-200/80 dark:border-slate-800/80 space-y-6">
+    <div class="upload-area">
+      <nz-upload 
+        nzType="drag" 
+        [(nzFileList)]="fileList" 
+        nzAccept="application/pdf" 
+        [nzBeforeUpload]="onUploadFile"
+        [nzShowUploadList]="false"
+        class="w-full block">
+        <div class="py-8 sm:py-12 flex flex-col items-center justify-center space-y-4">
+          <div class="w-20 h-20 rounded-3xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-md shadow-indigo-500/10">
+            <i nz-icon nzType="inbox" class="text-4xl"></i>
+          </div>
+          <div class="space-y-1 text-center">
+            <p class="text-base font-bold text-slate-900 dark:text-white">Drag & drop your PDF here, or <span class="text-indigo-600 dark:text-indigo-400 underline">browse</span></p>
+            <p class="text-xs text-slate-400">Supports standard PDF documents (.pdf)</p>
+          </div>
+        </div>
+      </nz-upload>
+    </div>
+
+    <!-- Selected File Preview Card -->
+    <div *ngIf="fileList.length > 0" class="p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-200/70 dark:border-indigo-800/70 flex items-center justify-between animate-fade-in">
+      <div class="flex items-center space-x-3 min-w-0">
+        <div class="w-10 h-10 rounded-xl bg-rose-500 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+          <i nz-icon nzType="file-pdf" nzTheme="fill" class="text-xl"></i>
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ fileList[0].name }}</p>
+          <span class="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+            <i nz-icon nzType="check-circle" nzTheme="fill" class="text-xs"></i> Ready for editing
+          </span>
+        </div>
+      </div>
+      <button 
+        (click)="fileList = []" 
+        class="p-2 text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 transition-colors"
+        title="Remove file">
+        <i nz-icon nzType="close" nzTheme="outline"></i>
       </button>
-      <button nz-button nzType="default" (click)="onCancelClick()" class="action-btn">
-        <i nz-icon nzType="close" nzTheme="outline"></i> Cancel
+    </div>
+
+    <!-- Feature Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
+      <div class="p-3">
+        <i nz-icon nzType="thunderbolt" class="text-indigo-500 text-lg mb-1"></i>
+        <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200">Zero Latency</h4>
+        <p class="text-[11px] text-slate-400 mt-0.5">Operates entirely in local browser memory</p>
+      </div>
+      <div class="p-3">
+        <i nz-icon nzType="sync" class="text-indigo-500 text-lg mb-1"></i>
+        <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200">Continuous Workflow</h4>
+        <p class="text-[11px] text-slate-400 mt-0.5">Chain multiple actions in one session</p>
+      </div>
+      <div class="p-3">
+        <i nz-icon nzType="lock" class="text-indigo-500 text-lg mb-1"></i>
+        <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200">Total Privacy</h4>
+        <p class="text-[11px] text-slate-400 mt-0.5">Zero tracking or external storage</p>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2">
+      <a routerLink="/" class="btn-secondary w-full sm:w-auto px-5 py-2.5 text-xs font-semibold">
+        Cancel
+      </a>
+      <button 
+        (click)="onSubmitClick()" 
+        [disabled]="fileList.length <= 0" 
+        class="btn-glow w-full sm:w-auto px-6 py-2.5 text-xs font-semibold">
+        <i nz-icon nzType="edit" nzTheme="outline" class="mr-1.5"></i>
+        Launch Editor
       </button>
-    </nz-space>
+    </div>
   </div>
 </div>
+

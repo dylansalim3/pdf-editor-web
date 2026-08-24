@@ -1,0 +1,21 @@
+<div class="inline-flex items-center p-1.5 rounded-2xl shadow-xl border backdrop-blur-xl transition-all duration-200 select-none z-20 space-x-1"
+  [ngClass]="darkMode ? 'bg-slate-900/90 border-slate-700/80 shadow-black/40 text-slate-200' : 'bg-white/90 border-slate-200 shadow-slate-300/40 text-slate-800'">
+  
+  <ng-container *ngFor="let tool of tools">
+    <button 
+      (click)="onSelectTool(tool.id)"
+      class="group relative flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-150"
+      [ngClass]="(activeTool$ | async) === tool.id 
+        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30 scale-105' 
+        : (darkMode ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100')"
+      [title]="tool.label + (tool.shortcut ? ' (' + tool.shortcut + ')' : '')">
+      
+      <i nz-icon [nzType]="tool.icon" nzTheme="outline" class="text-base"></i>
+
+      <!-- Tooltip Badge -->
+      <span class="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-0.5 text-[10px] font-medium rounded-md bg-slate-900 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap shadow-lg z-30">
+        {{ tool.label }}
+      </span>
+    </button>
+  </ng-container>
+</div>
